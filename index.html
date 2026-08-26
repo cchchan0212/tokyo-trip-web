@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>東京 & 上高地之旅 2026</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome 圖示 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen pb-12">
+
+  <!-- Header Banner -->
+  <header class="bg-slate-900 text-white py-6 px-4 shadow-md sticky top-0 z-50">
+    <div class="max-w-md mx-auto flex justify-between items-center">
+      <div>
+        <h1 class="text-xl font-bold tracking-wide">東京 & 上高地行程</h1>
+        <p class="text-xs text-slate-400 mt-1">2026.10.03 - 10.10</p>
+      </div>
+      <button onclick="fetchItinerary()" class="text-slate-300 hover:text-white p-2">
+        <i id="refresh-icon" class="fa-solid fa-rotate-right text-lg"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- 日期切換 Tab 列 -->
+  <div class="bg-white border-b border-slate-200 sticky top-[73px] z-40 shadow-sm">
+    <div id="date-tabs" class="max-w-md mx-auto flex overflow-x-auto py-2 px-3 gap-2 scrollbar-none">
+      <!-- 由 JS 動態產生日期按鈕 -->
+    </div>
+  </div>
+
+  <!-- 行程 Timeline 內容區 -->
+  <main class="max-w-md mx-auto px-4 mt-6">
+    <div id="loading" class="text-center py-12 text-slate-400">
+      <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i>
+      <p class="text-sm">載入行程資料中...</p>
+    </div>
+
+    <div id="timeline" class="space-y-4 hidden">
+      <!-- 行程卡片 JS 動態注入 -->
+    </div>
+  </main>
+
+  <script>
+    // ⚠️ 稍後建立 Apps Script 後，將取得的 Web App URL 貼在此處
+    const API_URL = "https://script.google.com/macros/s/AKfycbzqGdc4Ht_cyHIGso6pG6hhtsiw0Lv_iRUgJFlHwEBU3qWsiEEehqoAYW7tojCmxaM/exec";
+
+    let allData = [];
+    let currentDate = "";
+
+    // 將時間格式化為乾淨的 HH:mm 24 小時制文字（如 10:00）
+    // 若已是 HH:mm 格式則保持原樣；若為 ISO 日期字串（如 1899-12-30T02:23:18.000Z）則取出時間部分
+    function formatTime(time) {
+      if (!time) return time;
+      // 已符合 HH:mm（例如 10:00 / 02:00），直接回傳
+      if (/^\d{1,2}:\d{2}$/.test(time)) return time;
+      // 透過 Date 解析，取出的 HH:mm 為 24 小時制、補零至兩位數
+      const date = new Date(time);
+      if (isNaN(date.getTime())) return time;
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      return `${hours}:${minutes}`;
+    }
+
+    async function fetchItinerary() {
+      const refreshIcon = document.getElementById('refresh-icon');
+      refreshIcon.classList.add('fa-spin');
+      
+      try {
+        const response = await fetch(API_URL);
+        allData = await response.json();
+        
+        // 取得所有不重複日期
+        const dates = [...new Set(allData.map(item => item.date))].sort();
+        
+        if (dates.length > 0) {
+          if (!currentDate) currentDate = dates[0];
+          renderTabs(dates);
+          renderTimeline();
+        }
+      } catch (error) {
+        alert("資料載入失敗，請確認 API 網址設定！");
+        console.error(error);
+      } finally {
+        refreshIcon.classList.remove('fa-spin');
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('timeline').classList.remove('hidden');
+      }
+    }
+
+    function renderTabs(dates) {
+      const tabsContainer = document.getElementById('date-tabs');
+      tabsContainer.innerHTML = dates.map(d => {
+        const dateObj = new Date(d);
+        const dayStr = `${dateObj.getMonth() + 1}/${dateObj.getDate()}`;
+        const isActive = d === currentDate;
+        
+        return `
+          <button onclick="switchDate('${d}')" 
+            class="px-4 py-2 text-xs font-semibold rounded-full whitespace-nowrap transition-all ${
+              isActive 
+                ? 'bg-slate-900 text-white shadow-sm' 
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }">
+            ${dayStr}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function switchDate(date) {
+      currentDate = date;
+      const dates = [...new Set(allData.map(item => item.date))].sort();
+      renderTabs(dates);
+      renderTimeline();
+    }
+
+    function renderTimeline() {
+      const container = document.getElementById('timeline');
+      const filtered = allData.filter(item => item.date === currentDate);
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<p class="text-center text-slate-400 py-8 text-sm">今日暫無行程安排</p>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(item => {
+        let iconClass = "fa-location-dot";
+        let categoryBg = "bg-blue-50 text-blue-600";
+        
+        if (item.category === "Transport") {
+          iconClass = "fa-car";
+          categoryBg = "bg-amber-50 text-amber-600";
+        } else if (item.category === "Hotel") {
+          iconClass = "fa-bed";
+          categoryBg = "bg-emerald-50 text-emerald-600";
+        } else if (item.category === "Food") {
+          iconClass = "fa-utensils";
+          categoryBg = "bg-rose-50 text-rose-600";
+        }
+
+        return `
+          <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-100 flex gap-4 items-start">
+            <div class="text-center min-w-[50px]">
+              <span class="text-sm font-bold text-slate-800 block">${formatTime(item.time) || '--:--'}</span>
+              <span class="inline-block mt-2 p-2 rounded-lg text-xs ${categoryBg}">
+                <i class="fa-solid ${iconClass}"></i>
+              </span>
+            </div>
+            
+            <div class="flex-1 min-w-0">
+              <h3 class="font-bold text-slate-900 text-base">${item.title}</h3>
+              ${item.location ? `<p class="text-xs text-slate-500 mt-1"><i class="fa-solid fa-location-dot mr-1"></i>${item.location}</p>` : ''}
+              ${item.notes ? `<p class="text-xs text-slate-600 mt-2 bg-slate-50 p-2 rounded border border-slate-100">${item.notes}</p>` : ''}
+              
+              ${item.map_url ? `
+                <a href="${item.map_url}" target="_blank" class="inline-flex items-center text-xs text-blue-600 font-semibold mt-3 hover:underline">
+                  <i class="fa-solid fa-diamond-turn-right mr-1"></i>開啟地圖導航
+                </a>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    fetchItinerary();
+  </script>
+</body>
+</html>
