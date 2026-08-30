@@ -8,20 +8,84 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome 圖示 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- 自訂動畫樣式（秋日自駕主題） -->
+  <style>
+    /* 可愛小汽車行駛/搖晃動畫 */
+    @keyframes car-drive {
+      0%, 100% { transform: translateX(0) rotate(0deg); }
+      25% { transform: translateX(3px) rotate(-4deg); }
+      75% { transform: translateX(-3px) rotate(4deg); }
+    }
+    .car-drive {
+      display: inline-block;
+      animation: car-drive 1.6s ease-in-out infinite;
+    }
+
+    /* 重新整理按鈕 hover 旋轉 */
+    .refresh-btn i {
+      display: inline-block;
+      transition: transform 0.5s ease;
+    }
+    .refresh-btn:hover i {
+      transform: rotate(180deg);
+    }
+
+    /* 楓葉飄落動畫 */
+    @keyframes leaf-fall {
+      0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.75; }
+      100% { transform: translateY(110vh) translateX(70px) rotate(360deg); opacity: 0; }
+    }
+    .falling-leaf {
+      position: absolute;
+      top: 0;
+      pointer-events: none;
+      animation: leaf-fall linear infinite;
+    }
+
+    /* 地圖導航按鈕脈衝動畫 */
+    @keyframes gentle-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+    .map-btn {
+      animation: gentle-pulse 2s ease-in-out infinite;
+    }
+    .map-btn:hover {
+      animation-play-state: paused;
+    }
+
+    /* 載入吉祥物彈跳動畫 */
+    @keyframes float-bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .loading-mascot {
+      display: inline-block;
+      animation: float-bounce 1.4s ease-in-out infinite;
+    }
+
+  </style>
 </head>
-<body class="bg-stone-100 text-stone-800 min-h-screen pb-12">
+<body class="min-h-screen pb-12 text-stone-800 bg-cover bg-center bg-no-repeat bg-fixed bg-stone-800" style="background-image: url('https://picsum.photos/id/1015/1920/1080');">
+  <!-- 背景微暗遮罩（避免背景搶走文字焦點） -->
+  <div class="fixed inset-0 z-[1] bg-black/20" aria-hidden="true"></div>
+
+  <!-- 飄落楓葉背景動畫 -->
+  <div id="falling-leaves" class="fixed inset-0 z-[2] pointer-events-none overflow-hidden" aria-hidden="true"></div>
 
   <!-- Header Banner -->
   <header class="bg-amber-950 text-amber-50 py-6 px-4 shadow-md sticky top-0 z-50">
     <div class="max-w-md mx-auto flex justify-between items-center">
       <div>
         <div class="flex items-center gap-2">
-          <i class="fa-solid fa-car-side text-amber-300"></i>
+          <span class="car-drive text-2xl drop-shadow-sm" aria-hidden="true">🚗</span>
           <h1 class="text-xl font-bold tracking-wide text-amber-100">東京 & 上高地行程</h1>
         </div>
         <p class="text-xs text-amber-300 mt-1">2026 Autumn Driving Tour · 2026.10.03 - 10.10</p>
       </div>
-      <button onclick="fetchItinerary()" class="text-amber-300 hover:text-amber-100 p-2">
+      <button onclick="fetchItinerary()" class="refresh-btn text-amber-300 hover:text-amber-100 p-2" title="重新整理" aria-label="重新整理">
         <i id="refresh-icon" class="fa-solid fa-rotate-right text-lg"></i>
       </button>
     </div>
@@ -35,10 +99,12 @@
   </div>
 
   <!-- 行程 Timeline 內容區 -->
-  <main class="max-w-md mx-auto px-4 mt-6">
-    <div id="loading" class="text-center py-12 text-stone-400">
-      <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i>
-      <p class="text-sm">載入行程資料中...</p>
+  <main class="relative z-10 max-w-md mx-auto px-4 mt-6">
+    <div id="loading" class="text-center py-12 text-stone-200">
+      <div class="loading-mascot text-5xl mb-3 drop-shadow" aria-hidden="true">🗻</div>
+      <p class="text-sm font-medium">
+        <i class="fa-solid fa-spinner fa-spin text-amber-400 mr-1"></i>載入行程資料中...
+      </p>
     </div>
 
     <div id="timeline" class="space-y-4 hidden">
@@ -46,12 +112,45 @@
     </div>
   </main>
 
+  <!-- 頁尾可愛小亮點 -->
+  <footer class="relative z-10 max-w-md mx-auto px-4 mt-10 pb-4 text-center text-xs text-stone-200">
+    <p class="flex items-center justify-center gap-2 text-base drop-shadow" aria-hidden="true">🍁 🚗 ♨️ 🗻 🍁</p>
+    <p class="mt-1 font-medium">東京 & 上高地 · 秋日自駕之旅 2026</p>
+  </footer>
+
   <script>
     // ⚠️ 稍後建立 Apps Script 後，將取得的 Web App URL 貼在此處
     const API_URL = "https://script.google.com/macros/s/AKfycbzqGdc4Ht_cyHIGso6pG6hhtsiw0Lv_iRUgJFlHwEBU3qWsiEEehqoAYW7tojCmxaM/exec";
 
     let allData = [];
     let currentDate = "";
+
+    // 每日背景圖片對應表（依日期切換景點風景照）
+    const bgImages = {
+      '10/3': 'https://picsum.photos/id/1015/1920/1080', // 箱根蘆之湖與鳥居
+      '10/4': 'https://picsum.photos/id/1036/1920/1080', // 御殿場 / 富士山
+      '10/5': 'https://picsum.photos/id/1016/1920/1080', // 長野 諏訪湖
+      '10/6': 'https://picsum.photos/id/1043/1920/1080', // 長野 上高地 梓川
+    };
+    const TOKYO_BACKGROUND = 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1920&q=80'; // 東京秋日風景（其他日期 / 預設）
+    const DEFAULT_BACKGROUND = bgImages['10/3']; // 第一頁（10/3）預設背景
+
+    // 取得某日期對應的背景圖片（無對應時回傳東京預設圖）
+    function getBackgroundForDate(dateStr) {
+      const d = new Date(dateStr);
+      const key = `${d.getMonth() + 1}/${d.getDate()}`;
+      return bgImages[key] || TOKYO_BACKGROUND;
+    }
+
+    // 設定頁面背景：直接寫入 body 的 inline style（使用 url('...') 格式）
+    function setBackground(imageUrl) {
+      document.body.style.backgroundImage = "url('" + imageUrl + "')";
+    }
+
+    // 頁面初始化時，立即套用第一頁（10/3）的背景圖片
+    document.addEventListener('DOMContentLoaded', function () {
+      setBackground(DEFAULT_BACKGROUND);
+    });
 
     // 產生地圖導航連結：
     // 若 map_url 已是完整網址（以 http/https 開頭）則直接使用；
@@ -89,6 +188,7 @@
         
         if (dates.length > 0) {
           if (!currentDate) currentDate = dates[0];
+          setBackground(getBackgroundForDate(currentDate));
           renderTabs(dates);
           renderTimeline();
         }
@@ -124,6 +224,7 @@
 
     function switchDate(date) {
       currentDate = date;
+      setBackground(getBackgroundForDate(date));
       const dates = [...new Set(allData.map(item => item.date))].sort();
       renderTabs(dates);
       renderTimeline();
@@ -134,22 +235,22 @@
       const filtered = allData.filter(item => item.date === currentDate);
 
       if (filtered.length === 0) {
-        container.innerHTML = `<p class="text-center text-stone-400 py-8 text-sm">今日暫無行程安排</p>`;
+        container.innerHTML = `<p class="text-center text-stone-200 py-8 text-sm">今日暫無行程安排</p>`;
         return;
       }
 
       container.innerHTML = filtered.map(item => {
-        let iconClass = "fa-mountain";
+        let icon = "🗻";
         let categoryBg = "bg-emerald-100 text-emerald-800";
         
         if (item.category === "Transport") {
-          iconClass = "fa-car-side";
+          icon = "🚗";
           categoryBg = "bg-orange-100 text-orange-800";
         } else if (item.category === "Hotel") {
-          iconClass = "fa-hot-tub-person";
+          icon = "♨️";
           categoryBg = "bg-indigo-100 text-indigo-800";
         } else if (item.category === "Food") {
-          iconClass = "fa-utensils";
+          icon = "🍙";
           categoryBg = "bg-rose-100 text-rose-800";
         }
 
@@ -157,7 +258,7 @@
         const actionsHtml = (item.map_url || item.bus_url) ? `
           <div class="flex flex-wrap items-center gap-3 mt-3">
             ${item.map_url ? `
-              <a href="${getMapUrl(item)}" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-semibold bg-amber-600 text-white px-3 py-1.5 rounded-full hover:bg-amber-700 transition-colors">
+              <a href="${getMapUrl(item)}" target="_blank" class="map-btn inline-flex items-center gap-1.5 text-xs font-semibold bg-amber-600 text-white px-3 py-1.5 rounded-full hover:bg-amber-700 transition-colors">
                 <i class="fa-solid fa-diamond-turn-right"></i>開啟地圖導航
               </a>
             ` : ''}
@@ -170,18 +271,16 @@
         ` : '';
 
         return `
-          <div class="bg-white rounded-xl p-4 shadow-sm border border-stone-200 flex gap-4 items-start">
-            <div class="text-center min-w-[50px]">
-              <span class="text-sm font-bold text-stone-800 block">${formatTime(item.time) || '--:--'}</span>
-              <span class="inline-block mt-2 p-2 rounded-lg text-xs ${categoryBg}">
-                <i class="fa-solid ${iconClass}"></i>
-              </span>
+          <div class="bg-white/85 backdrop-blur-md rounded-2xl p-4 shadow-md border border-white/50 flex gap-4 items-start hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+            <div class="text-center min-w-[56px] flex flex-col items-center">
+              <span class="inline-block text-xs font-bold text-white bg-amber-600 px-2.5 py-1 rounded-full shadow-sm whitespace-nowrap">${formatTime(item.time) || '--:--'}</span>
+              <span class="inline-block mt-2 p-2 rounded-full text-base leading-none ${categoryBg}">${icon}</span>
             </div>
             
             <div class="flex-1 min-w-0">
               <h3 class="font-bold text-stone-900 text-base">${item.title}</h3>
-              ${item.location ? `<p class="text-xs text-stone-500 mt-1"><i class="fa-solid fa-location-dot mr-1"></i>${item.location}</p>` : ''}
-              ${item.notes ? `<p class="text-xs text-stone-600 mt-2 bg-stone-50 p-2 rounded border border-stone-200">${item.notes}</p>` : ''}
+              ${item.location ? `<p class="text-xs text-stone-600 mt-1"><i class="fa-solid fa-location-dot mr-1"></i>${item.location}</p>` : ''}
+              ${item.notes ? `<p class="text-xs text-stone-700 mt-2 bg-stone-50/80 p-2 rounded border border-stone-200">${item.notes}</p>` : ''}
               
               ${item.image_url ? `
                 <img src="${item.image_url}" alt="${item.title}" loading="lazy" class="mt-2 w-full rounded-lg object-cover">
@@ -193,6 +292,23 @@
         `;
       }).join('');
     }
+
+    // 產生飄落的秋葉（🍁🍂）背景動畫
+    (function createFallingLeaves() {
+      const container = document.getElementById('falling-leaves');
+      if (!container) return;
+      const leafEmojis = ['🍁', '🍂', '🍁', '🍂', '🍁'];
+      for (let i = 0; i < 15; i++) {
+        const leaf = document.createElement('span');
+        leaf.className = 'falling-leaf';
+        leaf.textContent = leafEmojis[i % leafEmojis.length];
+        leaf.style.left = (Math.random() * 100) + 'vw';
+        leaf.style.fontSize = (0.9 + Math.random() * 1.1) + 'rem';
+        leaf.style.animationDuration = (9 + Math.random() * 10) + 's';
+        leaf.style.animationDelay = (Math.random() * 12) + 's';
+        container.appendChild(leaf);
+      }
+    })();
 
     fetchItinerary();
   </script>
