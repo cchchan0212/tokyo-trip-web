@@ -74,6 +74,18 @@
       animation: float-bounce 1.4s ease-in-out infinite;
     }
 
+    /* 景點與交通速查按鈕：hover 微放大 + 柔和琥珀色光暈 */
+    .quick-link-btn {
+      transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+    }
+    .quick-link-btn:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 10px 24px -8px rgba(217, 119, 6, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.7) inset;
+    }
+    .quick-link-btn:active {
+      transform: translateY(0) scale(0.98);
+    }
+
   </style>
 </head>
 <body class="min-h-screen pb-12 text-stone-800 bg-cover bg-center bg-no-repeat bg-fixed bg-stone-800" style="background-image: url('images/10-3.jpg');">
@@ -106,17 +118,43 @@
     </div>
   </div>
 
-  <!-- 行程 Timeline 內容區 -->
-  <main class="relative z-10 w-full max-w-md mx-auto px-4 mt-6 md:ml-6 lg:ml-12 lg:mr-auto">
-    <div id="loading" class="text-center py-12 text-stone-200">
-      <div class="loading-mascot text-5xl mb-3 drop-shadow" aria-hidden="true">🗻</div>
-      <p class="text-sm font-medium">
-        <i class="fa-solid fa-spinner fa-spin text-amber-400 mr-1"></i>載入行程資料中...
-      </p>
-    </div>
+  <!-- 行程 Timeline + 右側速查 內容區（桌面左右並排，手機自動堆疊） -->
+  <main class="relative z-10 w-full px-4 mt-6 md:ml-6 lg:ml-12 lg:mr-auto lg:max-w-6xl lg:px-6">
+    <div class="max-w-md mx-auto md:mx-0 lg:max-w-none">
+      <div class="lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start">
 
-    <div id="timeline" class="space-y-4 hidden">
-      <!-- 行程卡片 JS 動態注入 -->
+        <!-- 左側：每日行程時間軸 -->
+        <section class="lg:col-span-6">
+          <div id="loading" class="text-center py-12 text-stone-200">
+            <div class="loading-mascot text-5xl mb-3 drop-shadow" aria-hidden="true">🗻</div>
+            <p class="text-sm font-medium">
+              <i class="fa-solid fa-spinner fa-spin text-amber-400 mr-1"></i>載入行程資料中...
+            </p>
+          </div>
+
+          <div id="timeline" class="space-y-4 hidden">
+            <!-- 行程卡片 JS 動態注入 -->
+          </div>
+        </section>
+
+        <!-- 右側：景點與交通速查 (Quick Links & Info) -->
+        <aside class="lg:col-span-6 mt-8 lg:mt-0">
+          <div class="bg-white/70 backdrop-blur-md rounded-2xl p-5 shadow-lg border border-white/40">
+            <div class="flex items-center gap-2">
+              <span class="text-xl" aria-hidden="true">📌</span>
+              <h2 class="text-lg font-bold text-stone-900">景點與交通速查</h2>
+            </div>
+            <p class="text-xs text-stone-600 mt-1 mb-4">
+              Quick Links &amp; Info · 依每日行程顯示對應的快捷資訊按鈕
+            </p>
+            <div id="quick-links" class="space-y-2.5">
+              <!-- 由 JS 依日期動態產生快捷按鈕 -->
+              <p class="text-sm text-stone-500">載入中...</p>
+            </div>
+          </div>
+        </aside>
+
+      </div>
     </div>
   </main>
 
@@ -186,6 +224,119 @@
       return `${hours}:${minutes}`;
     }
 
+    // ===== 每日「景點與交通速查」快捷按鈕資料 =====
+    // 每個按鈕包含：icon 圖示 / title 標題 / subtitle 小註解 / url 連結（官方網站或 Google 地圖搜尋）
+    const TOKYO_QUICK_LINKS = [
+      { icon: '🗼', title: '東京 / 銀座 購物與美食導覽', subtitle: '銀座商店街、美食與逛街重點', url: 'https://www.google.com/maps/search/?api=1&query=銀座 東京' },
+      { icon: '✈️', title: '成田機場 回程登機資訊', subtitle: '機場官方網站 · 航班與交通', url: 'https://www.narita-airport.jp/zh_tw/' },
+    ];
+
+    const QUICK_LINKS = {
+      '10/3': [
+        { icon: '🚗', title: '海老名 SA 休息站指南', subtitle: '東名高速第一個大型休息站', url: 'https://www.google.com/maps/search/?api=1&query=海老名サービスエリア' },
+        { icon: '☕', title: 'Bakery & Table 箱根', subtitle: '蘆之湖湖景 × 足湯咖啡', url: 'https://www.google.com/maps/search/?api=1&query=Bakery%26Table%20箱根' },
+        { icon: '♨️', title: '星野集團 界 箱根', subtitle: '溫泉旅館官網 / 設施資訊', url: 'https://kai-ryokan.jp/ja/hakone/' },
+      ],
+      '10/4': [
+        { icon: '⛴️', title: '箱根海賊船', subtitle: '時刻表 / 航線資訊', url: 'https://www.hakone-kankosen.co.jp/' },
+        { icon: '🚡', title: '箱根駒ヶ岳纜車 / 芦ノソラ', subtitle: '蘆之湖空中散步與觀景台', url: 'https://www.hakonekomagatake.com/' },
+        { icon: '🌋', title: '大湧谷 即時火山與交通', subtitle: '日本氣象廳火山情報', url: 'https://www.jma.go.jp/jp/volcano/' },
+        { icon: '🍣', title: 'さかなや 本店 居酒屋', subtitle: '箱根湯本 在地海鮮居酒屋', url: 'https://www.google.com/maps/search/?api=1&query=さかなや 本店 箱根' },
+      ],
+      '10/5': [
+        { icon: '🗻', title: '御殿場 HOTEL CLAD', subtitle: '富士山景度假飯店官方網站', url: 'https://www.hotelclad.jp/' },
+        { icon: '🌊', title: '諏訪湖 立石公園觀景台', subtitle: '諏訪湖全景眺望點', url: 'https://www.google.com/maps/search/?api=1&query=立石公園 諏訪湖' },
+        { icon: '🍜', title: '信州蕎麥前 Gadogado - 手打蕎麥麵', subtitle: '風格現代且充滿質感的蕎麥麵居酒屋，結合傳統信州手打蕎麥麵與創意日式小菜、地酒。', url: 'https://www.google.com/maps/search/?api=1&query=信州蕎麥前 Gadogado' },
+      ],
+      '10/6': [
+        { icon: '🍎', title: 'Trois Cinq Kamikochi - 現烤信州蘋果派', subtitle: '河童橋畔人氣甜點咖啡館 · 現烤蘋果派每日限量（16:00 關門）', url: 'https://www.google.com/maps/search/?api=1&query=Trois Cinq Kamikochi' },
+        { icon: '⛰️', title: '大正池 & 梓川健行路線地圖', subtitle: '河童橋 → 田代池 → 大正池 健行路線', url: 'https://www.google.com/maps/search/?api=1&query=大正池 上高地' },
+        { icon: '🚌', title: '澤渡停車場 / 上高地接駁交通資訊', subtitle: '停車場位置與接駁巴士・的士資訊', url: 'https://www.google.com/maps/search/?api=1&query=沢渡駐車場 上高地' },
+      ],
+      // 10/8 - 10/10 共用東京 / 回程資訊
+      '10/7': [
+        { icon: '🛍️', title: '談合坂 SA - 旗艦級休息站 / 伴手禮&美食指南', subtitle: '中央自動車道必停大休息站 · 山梨・長野伴手禮與美食', url: 'https://www.google.com/maps/search/?api=1&query=談合坂サービスエリア' },
+        { icon: '⛩️', title: '明神一之池 & 穗高神社奧宮 介紹', subtitle: '上高地明神池絕景與神社參拜', url: 'https://www.google.com/maps/search/?api=1&query=明神池 上高地' },
+        { icon: '🐟', title: '嘉門次小屋 傳統炭火烤岩魚', subtitle: '百年歷史小屋 · 炭火鹽烤岩魚', url: 'https://www.google.com/maps/search/?api=1&query=嘉門次小屋 上高地' },
+      ],
+      '10/8': TOKYO_QUICK_LINKS,
+      '10/9': TOKYO_QUICK_LINKS,
+      '10/10': TOKYO_QUICK_LINKS,
+    };
+
+    // ===== 本地行程資料覆寫 =====
+    // 以 'M/D' 為 key，指定日期時該日期的本地行程優先於 API 資料渲染；
+    // 若 API 缺少該日期，也會自動補上對應的日期 Tab。
+    const LOCAL_ITINERARY = {
+      '10/6': [
+        { time: '09:00', title: '出發前往澤渡停車場', category: 'Transport', location: '箱根・御殿場 → 澤渡停車場', notes: '自駕約 1.5 小時', map_url: '澤渡駐車場 上高地' },
+        { time: '10:45', title: '澤渡轉乘巴士 / 的士前往河童橋', category: 'Transport', location: '澤渡停車場 → 河童橋', notes: '於停車場轉乘接駁巴士或的士前往上高地', map_url: '澤渡駐車場 上高地' },
+        { time: '11:15', title: '上高地白樺莊 寄存行李 & 輕量午餐', category: 'Hotel', location: '上高地白樺莊', notes: '先寄存行李，簡單享用午餐', map_url: '上高地白樺荘' },
+        { time: '12:15', title: '梓川河畔健行（河童橋 ➔ 田代池 ➔ 大正池 ➔ 原路折返）', category: 'Sightseeing', location: '河童橋・田代池・大正池', notes: '沿梓川漫步，欣賞上高地秋日景色', map_url: '大正池 上高地' },
+        { time: '15:00', title: 'Trois Cinq 享用現烤信州蘋果派與咖啡', category: 'Food', location: 'Trois Cinq Kamikochi', notes: '必吃現烤蘋果派（16:00 關門）', map_url: 'Trois Cinq Kamikochi' },
+        { time: '16:00', title: '入住上高地白樺莊飯店', category: 'Hotel', location: '上高地白樺莊', notes: 'Check-in 入住', map_url: '上高地白樺荘' },
+      ],
+      '10/7': [
+        { time: '08:00', title: '晨間漫步至明神一之池', category: 'Sightseeing', location: '穗高神社奧宮 / 嘉門次小屋', notes: '沿梓川北上至明神池，參拜穗高神社奧宮，途經嘉門次小屋', map_url: '明神池 上高地' },
+        { time: '10:30', title: '返回白樺莊取行李，轉乘接駁車 / 的士至澤渡停車場取車', category: 'Transport', location: '白樺莊 → 澤渡停車場', notes: '搭乘接駁巴士或的士返回澤渡停車場取車', map_url: '沢渡駐車場 上高地' },
+        { time: '11:30', title: '澤渡取車出發，開車返回東京', category: 'Transport', location: '澤渡停車場 → 東京', notes: '中央自動車道（中央道）北上', map_url: '沢渡駐車場' },
+        { time: '13:30', title: '談合坂 SA (上行) 中途大休息', category: 'Food', location: '談合坂服務區（中央自動車道 上行）', notes: '享用午餐、採買山梨/長野伴手禮', map_url: '談合坂サービスエリア' },
+        { time: '16:30', title: '入住ダイワロイネットホテル 銀座 PREMIER 並辦理還車', category: 'Hotel', location: 'ダイワロイネットホテル 銀座 PREMIER', notes: 'Check-in 並完成還車手續', map_url: 'ダイワロイネットホテル銀座PREMIER' },
+      ],
+    };
+
+    // 取得所有不重複日期（合併 API 資料與本地行程資料）
+    function getAllDates() {
+      const dates = [...new Set(allData.map(item => item.date))];
+      Object.keys(LOCAL_ITINERARY).forEach(key => {
+        if (!dates.some(d => {
+          const dd = new Date(d);
+          return `${dd.getMonth() + 1}/${dd.getDate()}` === key;
+        })) {
+          dates.push(`2026-${key.replace('/', '-')}`);
+        }
+      });
+      return dates.sort();
+    }
+
+    // 取得某日期的本地行程資料（該日無覆寫資料時回傳 null）
+    function getLocalItemsForDate(dateStr) {
+      const d = new Date(dateStr);
+      const key = `${d.getMonth() + 1}/${d.getDate()}`;
+      const items = LOCAL_ITINERARY[key];
+      if (!items) return null;
+      return items.map(item => ({ ...item, date: dateStr }));
+    }
+
+    // 依目前日期渲染右側「景點與交通速查」快捷按鈕
+    function renderQuickLinks() {
+      const container = document.getElementById('quick-links');
+      if (!container) return;
+
+      const d = new Date(currentDate);
+      const key = `${d.getMonth() + 1}/${d.getDate()}`;
+      const links = QUICK_LINKS[key] || [];
+
+      if (links.length === 0) {
+        container.innerHTML = `<p class="text-sm text-stone-500">今日暫無速查資訊，隨時回來查看 🍁</p>`;
+        return;
+      }
+
+      container.innerHTML = links.map(link => `
+        <a href="${link.url}" target="_blank" rel="noopener"
+           class="quick-link-btn flex items-center gap-3 rounded-xl bg-white/85 border border-white/60 p-3 shadow-sm hover:bg-white">
+          <span class="text-xl min-w-[34px] text-center" aria-hidden="true">${link.icon}</span>
+          <span class="flex-1 min-w-0">
+            <span class="block text-sm font-bold text-stone-900 leading-snug">${link.title}</span>
+            ${link.subtitle ? `<span class="block text-xs text-stone-500 mt-0.5">${link.subtitle}</span>` : ''}
+          </span>
+          <span class="text-amber-600 shrink-0" aria-hidden="true">
+            <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+          </span>
+        </a>
+      `).join('');
+    }
+
     async function fetchItinerary() {
       const refreshIcon = document.getElementById('refresh-icon');
       refreshIcon.classList.add('fa-spin');
@@ -194,14 +345,15 @@
         const response = await fetch(API_URL);
         allData = await response.json();
         
-        // 取得所有不重複日期
-        const dates = [...new Set(allData.map(item => item.date))].sort();
+        // 取得所有不重複日期（API + 本地行程資料）
+        const dates = getAllDates();
         
         if (dates.length > 0) {
           if (!currentDate) currentDate = dates[0];
           setBackground(getBackgroundForDate(currentDate));
           renderTabs(dates);
           renderTimeline();
+          renderQuickLinks();
         }
       } catch (error) {
         alert("資料載入失敗，請確認 API 網址設定！");
@@ -236,14 +388,16 @@
     function switchDate(date) {
       currentDate = date;
       setBackground(getBackgroundForDate(date));
-      const dates = [...new Set(allData.map(item => item.date))].sort();
+      const dates = getAllDates();
       renderTabs(dates);
       renderTimeline();
+      renderQuickLinks();
     }
 
     function renderTimeline() {
       const container = document.getElementById('timeline');
-      const filtered = allData.filter(item => item.date === currentDate);
+      const localItems = getLocalItemsForDate(currentDate);
+      const filtered = localItems || allData.filter(item => item.date === currentDate);
 
       if (filtered.length === 0) {
         container.innerHTML = `<p class="text-center text-stone-200 py-8 text-sm">今日暫無行程安排</p>`;
