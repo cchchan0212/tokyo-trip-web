@@ -86,6 +86,15 @@
       transform: translateY(0) scale(0.98);
     }
 
+    /* 美食簡介彈窗：淡入 + 微微上浮 */
+    @keyframes modal-pop {
+      0% { opacity: 0; transform: translateY(8px) scale(0.98); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .modal-panel {
+      animation: modal-pop 0.22s ease-out;
+    }
+
   </style>
 </head>
 <body class="min-h-screen pb-12 text-stone-800 bg-cover bg-center bg-no-repeat bg-fixed bg-stone-800" style="background-image: url('images/10-3.jpg');">
@@ -164,6 +173,75 @@
     <p class="mt-1 font-medium">東京 & 上高地 · 秋日自駕之旅 2026</p>
   </footer>
 
+  <!-- 美食簡介彈窗（點「看簡介」開啟；點背景、按 ESC 或按關閉即可收合） -->
+  <div id="gourmet-modal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="gourmet-modal-title">
+    <div class="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onclick="closeGourmetDetail()" aria-hidden="true"></div>
+    <div class="modal-panel relative z-10 w-full max-w-md max-h-[80vh] overflow-y-auto bg-white rounded-2xl p-5 shadow-2xl border border-white/60">
+      <div class="flex items-start gap-3">
+        <span id="gourmet-modal-icon" class="text-2xl" aria-hidden="true">🍽️</span>
+        <div class="flex-1 min-w-0">
+          <h3 id="gourmet-modal-title" class="text-base font-bold text-stone-900 leading-snug"></h3>
+          <p id="gourmet-modal-subtitle" class="text-xs text-stone-500 mt-0.5"></p>
+        </div>
+        <button type="button" onclick="closeGourmetDetail()" class="text-stone-400 hover:text-stone-700 p-1 -mt-1" aria-label="關閉">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <p id="gourmet-modal-desc" class="text-sm text-stone-700 mt-4 leading-relaxed"></p>
+
+      <p id="gourmet-modal-tips" class="hidden text-xs text-amber-900 bg-amber-50 border border-amber-200 rounded-lg p-3 mt-4 leading-relaxed"></p>
+
+      <div class="flex flex-wrap items-center gap-2 mt-5">
+        <a id="gourmet-modal-map" href="#" target="_blank" rel="noopener"
+          class="inline-flex items-center gap-1.5 text-xs font-semibold bg-amber-600 text-white px-3 py-1.5 rounded-full hover:bg-amber-700 transition-colors">
+          <i class="fa-solid fa-diamond-turn-right"></i>開啟地圖導航
+        </a>
+        <button type="button" onclick="closeGourmetDetail()"
+          class="inline-flex items-center gap-1 text-xs font-semibold bg-white text-stone-700 border border-stone-300 px-3 py-1.5 rounded-full hover:bg-stone-50 transition-colors">
+          關閉
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 航班資訊彈窗（10/3「✈️ 去程航班資訊」與 10/10「✈️ 回程登機資訊」按鈕開啟；點背景、按 ESC 或「關閉」收合） -->
+  <div id="flight-modal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="flight-modal-title">
+    <div class="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onclick="closeFlightDetail()" aria-hidden="true"></div>
+    <div class="modal-panel relative z-10 w-full max-w-md max-h-[80vh] overflow-y-auto bg-white rounded-2xl p-5 shadow-2xl border border-white/60">
+      <div class="flex items-start gap-3">
+        <span class="text-2xl" aria-hidden="true">✈️</span>
+        <div class="flex-1 min-w-0">
+          <h3 id="flight-modal-title" class="text-base font-bold text-stone-900 leading-snug"></h3>
+          <p id="flight-modal-subtitle" class="text-xs text-stone-500 mt-0.5"></p>
+        </div>
+        <button type="button" onclick="closeFlightDetail()" class="text-stone-400 hover:text-stone-700 p-1 -mt-1" aria-label="關閉">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- 航班資訊列：由 JS 依 CATHAY_FLIGHT.rows 產生 -->
+      <dl id="flight-modal-rows" class="mt-4 space-y-2"></dl>
+
+      <p id="flight-modal-note" class="text-xs text-amber-900 bg-amber-50 border border-amber-200 rounded-lg p-3 mt-4 leading-relaxed"></p>
+
+      <div class="flex flex-wrap items-center gap-2 mt-5">
+        <a id="flight-modal-map" href="#" target="_blank" rel="noopener"
+          class="inline-flex items-center gap-1.5 text-xs font-semibold bg-amber-600 text-white px-3 py-1.5 rounded-full hover:bg-amber-700 transition-colors">
+          <i class="fa-solid fa-diamond-turn-right"></i><span id="flight-modal-map-label"></span>
+        </a>
+        <a id="flight-modal-site" href="#" target="_blank" rel="noopener"
+          class="inline-flex items-center gap-1 text-xs font-semibold bg-white text-stone-700 border border-stone-300 px-3 py-1.5 rounded-full hover:bg-stone-50 transition-colors">
+          <span id="flight-modal-site-label"></span>
+        </a>
+        <button type="button" onclick="closeFlightDetail()"
+          class="inline-flex items-center gap-1 text-xs font-semibold bg-white text-stone-700 border border-stone-300 px-3 py-1.5 rounded-full hover:bg-stone-50 transition-colors">
+          關閉
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // ⚠️ 稍後建立 Apps Script 後，將取得的 Web App URL 貼在此處
     const API_URL = "https://script.google.com/macros/s/AKfycbzqGdc4Ht_cyHIGso6pG6hhtsiw0Lv_iRUgJFlHwEBU3qWsiEEehqoAYW7tojCmxaM/exec";
@@ -231,8 +309,59 @@
       { icon: '✈️', title: '成田機場 回程登機資訊', subtitle: '機場官方網站 · 航班與交通', url: 'https://www.narita-airport.jp/zh_tw/' },
     ];
 
+    // ===== 去程 / 回程航班資訊（國泰航空 Cathay Pacific，PNR: D6VGKN）=====
+    // 供右側速查的航班按鈕彈出詳細卡片使用（rows 依序顯示於彈窗）
+    // key: outbound = 10/3（第一天）去程；return = 10/10（最後一天）回程
+    const CATHAY_FLIGHTS = {
+      // 10/3（第一天）去程：香港 HKG → 東京成田 NRT
+      outbound: {
+        icon: '✈️',
+        title: '去程航班資訊 (CX524 - PNR: D6VGKN)',
+        subtitle: '國泰航空 Cathay Pacific · 香港 HKG → 東京成田 NRT 第 2 航廈',
+        note: '凌晨 01:20 起飛，建議 10/2 晚上約 22:20 前抵達香港國際機場辦理登機與安檢；抵達成田為 10/3 06:50。',
+        rows: [
+          { label: '航空公司 / 航班', value: '國泰航空 Cathay Pacific · CX524' },
+          { label: '預訂參考編號 (PNR)', value: 'D6VGKN' },
+          { label: '起飛時間', value: '2026-10-03 (六) 01:20' },
+          { label: '出發地點', value: '香港國際機場 (HKG)' },
+          { label: '抵達時間', value: '2026-10-03 (六) 06:50' },
+          { label: '目的地', value: '東京成田國際機場 (NRT) 第 2 航廈 (Terminal 2)' },
+        ],
+        mapQuery: '香港國際機場',
+        mapLabel: '導航到香港國際機場 (HKG)',
+        siteLabel: '香港機場官網',
+        officialUrl: 'https://www.hongkongairport.com/tc/',
+      },
+      // 10/10（最後一天）回程：東京成田 NRT → 香港 HKG
+      return: {
+        icon: '✈️',
+        title: '回程登機資訊 (CX501 - PNR: D6VGKN)',
+        subtitle: '國泰航空 Cathay Pacific · 東京成田 NRT 第 2 航廈 → 香港 HKG',
+        note: '建議起飛前約 3 小時抵達 NRT 第 2 航廈辦理 Check-in 與安檢；抵達香港為翌日 01:55。',
+        rows: [
+          { label: '航空公司 / 航班', value: '國泰航空 Cathay Pacific · CX501' },
+          { label: '預訂參考編號 (PNR)', value: 'D6VGKN' },
+          { label: '起飛時間', value: '2026-10-10 (六) 22:00' },
+          { label: '出發地點', value: '東京成田國際機場 (NRT) 第 2 航廈 (Terminal 2)' },
+          { label: '抵達時間', value: '2026-10-11 (日) 01:55' },
+          { label: '目的地', value: '香港國際機場 (HKG)' },
+        ],
+        mapQuery: '成田国際空港 第2ターミナル',
+        mapLabel: '導航到 NRT 第 2 航廈',
+        siteLabel: '成田機場官網',
+        officialUrl: 'https://www.narita-airport.jp/zh_tw/',
+      },
+    };
+
+    // 10/10（最後一天）專用速查：回程航班按鈕改為開啟詳細卡片（不另開新視窗）
+    const TOKYO_DEPARTURE_QUICK_LINKS = [
+      { icon: '🗼', title: '東京 / 銀座 購物與美食導覽', subtitle: '銀座商店街、美食與逛街重點', url: 'https://www.google.com/maps/search/?api=1&query=銀座 東京' },
+      { icon: '✈️', title: '回程登機資訊 (CX501 - PNR: D6VGKN)', subtitle: '國泰航空 · NRT 第 2 航廈 → 香港 HKG · 點擊查看完整航班資訊', action: 'flight', flight: 'return' },
+    ];
+
     const QUICK_LINKS = {
       '10/3': [
+        { icon: '✈️', title: '去程航班資訊 (CX524 - PNR: D6VGKN)', subtitle: '國泰航空 · 香港 HKG → 東京成田 NRT 第 2 航廈 · 點擊查看完整航班資訊', action: 'flight', flight: 'outbound' },
         { icon: '🚗', title: '海老名 SA 休息站指南', subtitle: '東名高速第一個大型休息站', url: 'https://www.google.com/maps/search/?api=1&query=海老名サービスエリア' },
         { icon: '☕', title: 'Bakery & Table 箱根', subtitle: '蘆之湖湖景 × 足湯咖啡', url: 'https://www.google.com/maps/search/?api=1&query=Bakery%26Table%20箱根' },
         { icon: '♨️', title: '星野集團 界 箱根', subtitle: '溫泉旅館官網 / 設施資訊', url: 'https://kai-ryokan.jp/ja/hakone/' },
@@ -261,8 +390,73 @@
       ],
       '10/8': TOKYO_QUICK_LINKS,
       '10/9': TOKYO_QUICK_LINKS,
-      '10/10': TOKYO_QUICK_LINKS,
+      '10/10': TOKYO_DEPARTURE_QUICK_LINKS, // 最後一天改用可開啟航班詳細卡片的按鈕
     };
+
+    // ===== 東京精選美食口袋名單（10/8 & 10/9 右側速查專區） =====
+    // 每項包含：icon 圖示 / title 店名 / subtitle 一句話賣點 / desc 彈窗簡介 / tips 實用提醒 / mapQuery 地圖搜尋關鍵字
+    const TOKYO_GOURMET = [
+      {
+        icon: '🍵',
+        title: '8108 KYOTO',
+        subtitle: '木村拓哉讚不絕口抹茶',
+        desc: '以京都風抹茶為主打的抹茶專門店，從濃茶、薄茶到抹茶甜點都能一次品嚐，連木村拓哉都讚不絕口的濃厚茶香是最大賣點。',
+        tips: '適合安排在 10/7 抵達東京後，或 10/8 市區行程之間的空檔；抹茶系伴手禮也很值得入手。',
+        mapQuery: '8108 KYOTO 抹茶',
+      },
+      {
+        icon: '🍡',
+        title: 'SISIRI Ebisu',
+        subtitle: '惠比壽日式茶室和菓子',
+        desc: '藏身惠比壽的日式茶室空間，以日本茶搭配手作和菓子，節奏緩慢、氣氛安靜，適合在逛街行程中坐下來好好休息。',
+        tips: '和菓子多為當日現作、數量有限，建議安排在下午茶時段並提早前往。',
+        mapQuery: 'SISIRI 恵比寿',
+      },
+      {
+        icon: '☕',
+        title: 'Starbucks Reserve Roastery',
+        subtitle: '中目黑露天旗艦店',
+        desc: '星巴克全球旗艦級「臻選烘焙工坊」，座落目黒川畔的中目黑，多層樓空間結合烘焙、咖啡吧與露台座位，是東京最具代表性的咖啡朝聖地。',
+        tips: '人潮眾多，建議平日或開店後不久前往，較容易找到座位與拍照角度。',
+        mapQuery: 'スターバックス リザーブ ロースタリー 東京',
+      },
+      {
+        icon: '☕',
+        title: 'GLITCH COFFEE',
+        subtitle: '日本橋精品手沖咖啡',
+        desc: '東京知名自家烘焙精品咖啡，以淺焙豆與手沖單品聞名，坐在吧檯可近距離欣賞咖啡師沖煮，是咖啡迷到東京必訪的一站。',
+        tips: '風味偏向明亮果酸，喜歡淺焙調性的話很推薦；現場也常能選購咖啡豆帶回家。',
+        mapQuery: 'GLITCH COFFEE 日本橋',
+      },
+      {
+        icon: '🍩',
+        title: 'we love donut',
+        subtitle: '神樂坂質感甜甜圈',
+        desc: '神樂坂巷弄裡的質感甜甜圈店，手作甜甜圈口感鬆軟、口味隨季節更換，店內與包裝風格都很好拍。',
+        tips: '熱門口味常提早售完，建議早場前往，順道散步神樂坂石板小路與巷弄小店。',
+        mapQuery: 'we love donut 神楽坂',
+      },
+      {
+        icon: '🍕',
+        title: '400℃ PIZZA',
+        subtitle: '神樂坂完全預約制披薩（必吃 FNT）',
+        desc: '神樂坂的完全預約制披薩店，以高溫窯烤出外脆內軟的餅皮，是本次東京口袋名單裡的必吃 FNT 之一。',
+        tips: '完全預約制，務必事先訂位；臨時前往通常無法現場候位。',
+        mapQuery: '400℃ PIZZA 神楽坂',
+      },
+      {
+        icon: '🍝',
+        title: 'Inf 隅田川イタリアン 蔵前店',
+        subtitle: '隅田川晴空塔夜景義式餐廳',
+        desc: '位於蔵前的義式餐廳，緊鄰隅田川，天氣好時可眺望晴空塔夜景，很適合安排為 10/8 東京行程的收尾晚餐。',
+        tips: '想坐窗邊賞夜景建議事先訂位；餐後沿隅田川散步回車站氣氛很好。',
+        mapQuery: 'Inf 隅田川イタリアン 蔵前店',
+      },
+    ];
+
+    // 需顯示「東京精選美食口袋名單」的日期（10/8 東京市區、10/9 東京自由活動）
+    // 10/7 不顯示；10/8 與 10/9 共用 TOKYO_QUICK_LINKS 並額外附加此美食專區
+    const GOURMET_DATES = ['10/8', '10/9'];
 
     // ===== 本地行程資料覆寫 =====
     // 以 'M/D' 為 key，指定日期時該日期的本地行程優先於 API 資料渲染；
@@ -316,26 +510,154 @@
       const d = new Date(currentDate);
       const key = `${d.getMonth() + 1}/${d.getDate()}`;
       const links = QUICK_LINKS[key] || [];
+      // 10/8 與 10/9 額外顯示「東京精選美食口袋名單」專區（10/7 已移除）
+      const showGourmet = GOURMET_DATES.includes(key);
 
-      if (links.length === 0) {
+      if (links.length === 0 && !showGourmet) {
         container.innerHTML = `<p class="text-sm text-stone-500">今日暫無速查資訊，隨時回來查看 🍁</p>`;
         return;
       }
 
-      container.innerHTML = links.map(link => `
-        <a href="${link.url}" target="_blank" rel="noopener"
-           class="quick-link-btn flex items-center gap-3 rounded-xl bg-white/85 border border-white/60 p-3 shadow-sm hover:bg-white">
+      const quickLinksHtml = links.map(link => {
+        // action: 'flight' 的項目渲染為按鈕（點擊開啟回程航班彈窗），其餘維持外部連結
+        const isFlightAction = link.action === 'flight';
+        const openTag = isFlightAction
+          ? `<button type="button" onclick="openFlightDetail('${link.flight || 'return'}')"`
+          : `<a href="${link.url}" target="_blank" rel="noopener"`;
+        const closeTag = isFlightAction ? '</button>' : '</a>';
+        const trailingIcon = isFlightAction ? 'fa-circle-info' : 'fa-arrow-up-right-from-square';
+
+        return `
+        ${openTag}
+           class="quick-link-btn w-full text-left flex items-center gap-3 rounded-xl bg-white/85 border border-white/60 p-3 shadow-sm hover:bg-white">
           <span class="text-xl min-w-[34px] text-center" aria-hidden="true">${link.icon}</span>
           <span class="flex-1 min-w-0">
             <span class="block text-sm font-bold text-stone-900 leading-snug">${link.title}</span>
             ${link.subtitle ? `<span class="block text-xs text-stone-500 mt-0.5">${link.subtitle}</span>` : ''}
           </span>
           <span class="text-amber-600 shrink-0" aria-hidden="true">
-            <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+            <i class="fa-solid ${trailingIcon} text-xs"></i>
           </span>
-        </a>
-      `).join('');
+        ${closeTag}
+      `;
+      }).join('');
+
+      // 一般速查按鈕 + （10/7、10/8）東京精選美食口袋名單
+      container.innerHTML = quickLinksHtml + (showGourmet ? getGourmetSectionHtml() : '');
     }
+
+    // 產生美食項目的地圖導航連結（沿用 getMapUrl 的邏輯：非完整網址時轉為 Google 地圖搜尋）
+    function getGourmetMapUrl(item) {
+      return getMapUrl({ map_url: item.mapQuery || item.title });
+    }
+
+    // 產生「東京精選美食口袋名單」區塊（僅 10/8 與 10/9 顯示）
+    function getGourmetSectionHtml() {
+      const cards = TOKYO_GOURMET.map((item, index) => `
+        <div class="rounded-xl bg-white/85 border border-white/60 p-3 shadow-sm">
+          <div class="flex items-start gap-3">
+            <span class="text-xl min-w-[34px] text-center" aria-hidden="true">${item.icon}</span>
+            <span class="flex-1 min-w-0">
+              <span class="block text-sm font-bold text-stone-900 leading-snug">${item.title}</span>
+              ${item.subtitle ? `<span class="block text-xs text-stone-500 mt-0.5">${item.subtitle}</span>` : ''}
+            </span>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 mt-2.5">
+            <button type="button" onclick="openGourmetDetail(${index})"
+              class="inline-flex items-center gap-1 text-xs font-semibold bg-amber-100 text-amber-900 border border-amber-200 px-3 py-1.5 rounded-full hover:bg-amber-200 transition-colors">
+              📖 看簡介
+            </button>
+            <a href="${getGourmetMapUrl(item)}" target="_blank" rel="noopener"
+              class="inline-flex items-center gap-1 text-xs font-semibold bg-amber-600 text-white px-3 py-1.5 rounded-full hover:bg-amber-700 transition-colors">
+              <i class="fa-solid fa-diamond-turn-right"></i>開啟地圖導航
+            </a>
+          </div>
+        </div>
+      `).join('');
+
+      return `
+        <div class="mt-5 pt-4 border-t border-stone-200/80">
+          <div class="flex items-center gap-2">
+            <span class="text-xl" aria-hidden="true">🍽️</span>
+            <h3 class="text-sm font-bold text-stone-900">東京精選美食口袋名單</h3>
+          </div>
+          <p class="text-xs text-stone-600 mt-1 mb-3">Tokyo Gourmet &amp; Cafes · 點「看簡介」看店家介紹，或直接開啟地圖導航</p>
+          <div class="space-y-2.5">${cards}</div>
+        </div>
+      `;
+    }
+
+    // 開啟指定美食的簡介彈窗
+    function openGourmetDetail(index) {
+      const item = TOKYO_GOURMET[index];
+      const modal = document.getElementById('gourmet-modal');
+      if (!item || !modal) return;
+
+      document.getElementById('gourmet-modal-icon').textContent = item.icon;
+      document.getElementById('gourmet-modal-title').textContent = item.title;
+      document.getElementById('gourmet-modal-subtitle').textContent = item.subtitle || '';
+      document.getElementById('gourmet-modal-desc').textContent = item.desc || '';
+      document.getElementById('gourmet-modal-map').href = getGourmetMapUrl(item);
+
+      const tipsEl = document.getElementById('gourmet-modal-tips');
+      if (item.tips) {
+        tipsEl.textContent = item.tips;
+        tipsEl.classList.remove('hidden');
+      } else {
+        tipsEl.classList.add('hidden');
+      }
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    // 關閉美食簡介彈窗
+    function closeGourmetDetail() {
+      const modal = document.getElementById('gourmet-modal');
+      if (!modal) return;
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // 開啟航班資訊彈窗（key: 'outbound' 去程 10/3 / 'return' 回程 10/10）
+    function openFlightDetail(key) {
+      const modal = document.getElementById('flight-modal');
+      const flight = CATHAY_FLIGHTS[key] || CATHAY_FLIGHTS.return;
+      if (!modal || !flight) return;
+
+      document.getElementById('flight-modal-title').textContent = flight.title;
+      document.getElementById('flight-modal-subtitle').textContent = flight.subtitle;
+      document.getElementById('flight-modal-note').textContent = flight.note;
+      document.getElementById('flight-modal-rows').innerHTML = flight.rows.map(row => `
+        <div class="flex items-start gap-2 rounded-lg bg-stone-50 border border-stone-200 p-2.5">
+          <dt class="w-32 shrink-0 text-xs font-semibold text-stone-500">${row.label}</dt>
+          <dd class="flex-1 min-w-0 text-xs font-bold text-stone-900 break-words">${row.value}</dd>
+        </div>
+      `).join('');
+      document.getElementById('flight-modal-map').href = getMapUrl({ map_url: flight.mapQuery });
+      document.getElementById('flight-modal-map-label').textContent = flight.mapLabel;
+      document.getElementById('flight-modal-site').href = flight.officialUrl;
+      document.getElementById('flight-modal-site-label').textContent = flight.siteLabel;
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    // 關閉回程航班資訊彈窗
+    function closeFlightDetail() {
+      const modal = document.getElementById('flight-modal');
+      if (!modal) return;
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // 按 ESC 可關閉美食簡介 / 回程航班資訊彈窗
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') {
+        closeGourmetDetail();
+        closeFlightDetail();
+      }
+    });
 
     async function fetchItinerary() {
       const refreshIcon = document.getElementById('refresh-icon');
