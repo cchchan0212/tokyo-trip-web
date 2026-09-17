@@ -242,6 +242,43 @@
     </div>
   </div>
 
+  <!-- 景點詳細介紹彈窗（10/3 速查按鈕：海老名 SA / Bakery & Table 箱根 / 星野集團 界 箱根 開啟；點背景、按 ESC 或「關閉」收合） -->
+  <div id="spot-modal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="spot-modal-title">
+    <div class="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onclick="closeSpotDetail()" aria-hidden="true"></div>
+    <div class="modal-panel relative z-10 w-full max-w-md max-h-[80vh] overflow-y-auto bg-white rounded-2xl p-5 shadow-2xl border border-white/60">
+      <div class="flex items-start gap-3">
+        <span id="spot-modal-icon" class="text-2xl" aria-hidden="true">📍</span>
+        <div class="flex-1 min-w-0">
+          <h3 id="spot-modal-title" class="text-base font-bold text-stone-900 leading-snug"></h3>
+          <p id="spot-modal-subtitle" class="text-xs text-stone-500 mt-0.5"></p>
+        </div>
+        <button type="button" onclick="closeSpotDetail()" class="text-stone-400 hover:text-stone-700 p-1 -mt-1" aria-label="關閉">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- 景點資訊列：由 JS 依 SPOT_DETAILS.rows 產生（與航班資訊彈窗一致結構） -->
+      <dl id="spot-modal-rows" class="mt-4 space-y-2"></dl>
+
+      <p id="spot-modal-note" class="text-xs text-amber-900 bg-amber-50 border border-amber-200 rounded-lg p-3 mt-4 leading-relaxed"></p>
+
+      <div class="flex flex-wrap items-center gap-2 mt-5">
+        <a id="spot-modal-map" href="#" target="_blank" rel="noopener"
+          class="inline-flex items-center gap-1.5 text-xs font-semibold bg-amber-600 text-white px-3 py-1.5 rounded-full hover:bg-amber-700 transition-colors">
+          <i class="fa-solid fa-diamond-turn-right"></i><span id="spot-modal-map-label"></span>
+        </a>
+        <a id="spot-modal-site" href="#" target="_blank" rel="noopener" style="display:none"
+          class="inline-flex items-center gap-1 text-xs font-semibold bg-white text-stone-700 border border-stone-300 px-3 py-1.5 rounded-full hover:bg-stone-50 transition-colors">
+          <span id="spot-modal-site-label"></span>
+        </a>
+        <button type="button" onclick="closeSpotDetail()"
+          class="inline-flex items-center gap-1 text-xs font-semibold bg-white text-stone-700 border border-stone-300 px-3 py-1.5 rounded-full hover:bg-stone-50 transition-colors">
+          關閉
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // ⚠️ 稍後建立 Apps Script 後，將取得的 Web App URL 貼在此處
     const API_URL = "https://script.google.com/macros/s/AKfycbzqGdc4Ht_cyHIGso6pG6hhtsiw0Lv_iRUgJFlHwEBU3qWsiEEehqoAYW7tojCmxaM/exec";
@@ -353,6 +390,224 @@
       },
     };
 
+    // ===== 10/3（第一天）景點詳細介紹資料（右側速查按鈕點擊開啟彈窗） =====
+    // 每項包含：icon 圖示 / title 標題 / subtitle 小註解 /
+    //           rows 資訊列（label 標籤 + value 內容，與航班彈窗一致）/ note 備忘提示 /
+    //           mapQuery 地圖搜尋關鍵字 / mapLabel 導航按鈕文字 / siteUrl+siteLabel 官網連結（選填）
+    const SPOT_DETAILS = {
+      'ebina_sa': {
+        icon: '🚗',
+        title: '海老名 SA 休息站指南',
+        subtitle: '東名高速公路 · 旗艦級休息站',
+        note: '東名高速最熱門休息站，建議下飛機取車後在此休息 30 分鐘補給。',
+        rows: [
+          { label: '類別', value: '東名高速公路旗艦休息站' },
+          { label: '必吃美食', value: 'Portugal 巨型哈密瓜包、神奈川黑豚肉包、現炸卡士達泡芙' },
+        ],
+        mapQuery: '海老名サービスエリア',
+        mapLabel: '導航至海老名 SA',
+        siteLabel: '',
+        siteUrl: '',
+      },
+      'bakery_table': {
+        icon: '☕',
+        title: 'Bakery & Table 箱根',
+        subtitle: '蘆之湖畔 · 景觀麵包咖啡館',
+        note: '足湯席不可預約且位子有限，抵達後建議先推派一人買麵包並至戶外候位。',
+        rows: [
+          { label: '特色', value: '蘆之湖畔景觀麵包店，設有戶外湖景溫泉足湯席' },
+          { label: '必點推薦', value: '米粉咖哩蛋包麵包' },
+        ],
+        mapQuery: 'Bakery&Table 箱根',
+        mapLabel: '導航至 Bakery & Table',
+        siteLabel: '',
+        siteUrl: '',
+      },
+      'kai_hakone': {
+        icon: '♨️',
+        title: '星野集團 界 箱根',
+        subtitle: '須雲川溪谷畔 · 溫泉旅館',
+        note: '入房後可先換上作務衣前往半露天大浴場泡湯，放鬆第一天的車程疲勞。',
+        rows: [
+          { label: '入住資訊', value: 'Check-in 15:00' },
+          { label: '設施亮點', value: '須雲川溪谷半露天溫泉、寄木細工體驗' },
+          { label: '晚餐時間', value: '17:30 / 19:30' },
+        ],
+        mapQuery: '星野リゾート 界 箱根',
+        mapLabel: '導航至界箱根',
+        siteLabel: '開啟界箱根官網',
+        siteUrl: 'https://hoshinoresorts.com/ja/hotels/kaihakone/',
+      },
+      'hakone_pirate_ship': {
+        icon: '🚢',
+        title: '箱根海賊觀光船',
+        subtitle: '蘆之湖觀光船 · 航線與船型資訊',
+        note: '建議搭乘特別船室（需加購）享受獨立沙發與戶外視野；搭船可遠眺水上鳥居與富士山絕景。',
+        rows: [
+          { label: '航線', value: '桃源台港 ↔ 箱根町港 ↔ 元箱根港' },
+          { label: '船型', value: '皇家太陽號 / 勝景號 / 魁拔號' },
+        ],
+        mapQuery: '箱根海賊船 桃源台港',
+        mapLabel: '導航至桃源台港',
+        siteLabel: '🚢 海賊船官方時刻表 & 運價',
+        siteUrl: 'https://www.hakonenavi.jp/international/en/spot/105',
+      },
+      'komagatake_ropeway': {
+        icon: '🌁',
+        title: '箱根駒ヶ岳纜車 & 芦ノソラ觀景台',
+        subtitle: '蘆之湖空中散步與觀景台',
+        note: '山頂設有箱根神社元宮，山頂風大且氣溫較低，建議攜帶保暖外衣。',
+        rows: [
+          { label: '亮點', value: '7 分鐘直達駒ヶ岳山頂，展望台「芦ノソラ」可 360 度俯瞰蘆之湖全景與駿河灣' },
+        ],
+        mapQuery: '箱根駒ヶ岳ロープウェー',
+        mapLabel: '導航至駒ヶ岳纜車登山口',
+        siteLabel: '🌁 駒ヶ岳纜車官方網站',
+        siteUrl: 'https://www.princehotels.co.jp/amuse/hakone-en/ropeway/',
+      },
+      'owakudani_info': {
+        icon: '🌋',
+        title: '大涌谷火山景觀 & 交通管制',
+        subtitle: '箱根地熱火山景觀與交通',
+        note: '若火山瓦斯濃度過高部分步道會暫時封閉；假日停車場排隊較長，建議注意時間。',
+        rows: [
+          { label: '特色', value: '壯觀的地熱硫磺煙霧火山景觀' },
+          { label: '必吃美食', value: '黑玉子（黑蛋，傳說吃一顆延壽 7 年）' },
+        ],
+        mapQuery: '大涌谷 駐車場',
+        mapLabel: '導航至大涌谷停車場',
+        siteLabel: '',
+        siteUrl: '',
+      },
+      'sakanaya_honten': {
+        icon: '🍣',
+        title: 'さかなや 本店 (御殿場在地人氣海鮮居酒屋)',
+        subtitle: '御殿場在地海鮮居酒屋',
+        note: '熱門時段人潮較多，自 HOTEL CLAD 開車前往約 15 分鐘，建議提早前往或讓飯店協助確認席位。',
+        rows: [
+          { label: '特色', value: '御殿場當地極高評價海鮮料理' },
+          { label: '必點推薦', value: '厚切刺身盛合、當日特選烤魚、海鮮天婦羅' },
+        ],
+        mapQuery: 'さかなや 本店 御殿場',
+        mapLabel: '導航至さかなや 本店',
+        siteLabel: '',
+        siteUrl: '',
+      },
+      'hotel_clad': {
+        icon: '🏨',
+        title: '御殿場 HOTEL CLAD',
+        subtitle: '富士山景度假飯店',
+        note: '辦理入住手續，可前往木花之湯享用大浴場與溫泉，欣賞富士山景觀。',
+        rows: [
+          { label: '入住資訊', value: 'Check-in 15:00' },
+          { label: '亮點', value: '富士山景觀飯店、直通木花之湯溫泉' },
+        ],
+        mapQuery: '御殿場 HOTEL CLAD',
+        mapLabel: '導航至 HOTEL CLAD',
+        siteLabel: 'HOTEL CLAD 官網',
+        siteUrl: 'https://www.gotemba-hotelclad.jp/',
+      },
+      'tateishi_park': {
+        icon: '🌊',
+        title: '諏訪湖 立石公園觀景台',
+        subtitle: '諏訪湖全景眺望點',
+        note: '夕陽與夜景極具人氣，公園設有免費停車場，是長途開車後絕佳的散策休息點。',
+        rows: [
+          { label: '亮點', value: '電影《你的名字》隕石湖（糸守町）取景聖地！可 180 度全景俯瞰諏訪湖與遠方阿爾卑斯山脈' },
+        ],
+        mapQuery: '立石公園 諏訪湖',
+        mapLabel: '導航至立石公園',
+        siteLabel: '',
+        siteUrl: '',
+      },
+      'gadogado_soba': {
+        icon: '🍜',
+        title: '信州蕎麥前 Gadogado (諏訪市人氣蕎麥居酒屋)',
+        subtitle: '現代質感風格的信州手打蕎麥麵專門店',
+        note: '結合傳統信州蕎麥文化與現代餐酒館風格，非常適合享用午餐或晚餐體驗在地食材。',
+        rows: [
+          { label: '特色', value: '現代質感風格的信州手打蕎麥麵專門店' },
+          { label: '必點推薦', value: '鴨肉沾麵蕎麥、日式創意小菜、長野地酒' },
+        ],
+        mapQuery: '信州蕎麥前 Gadogado 諏訪',
+        mapLabel: '導航至 Gadogado',
+        siteLabel: '',
+        siteUrl: '',
+      },
+      'hotel_beniya': {
+        icon: '♨️',
+        title: 'Hotel Beni Ya (ホテル紅や)',
+        subtitle: '諏訪湖第一排景觀溫泉飯店',
+        note: '抵達後辦理入住手續，放鬆休息並預約晚餐時間，可在房內或大浴場欣賞諏訪湖夕陽。',
+        rows: [
+          { label: '入住資訊', value: 'Check-in 15:00' },
+          { label: '設施亮點', value: '諏訪湖第一排景觀溫泉飯店，頂樓擁有絕景展望大浴場' },
+        ],
+        mapQuery: 'ホテル紅や 諏訪湖',
+        mapLabel: '導航至 Hotel Beni Ya',
+        siteLabel: 'Hotel Beni Ya 官網',
+        siteUrl: 'https://www.hotel-beniya.co.jp/',
+      },
+      'sawando_parking': {
+        icon: '🅿️',
+        title: '市營第三駐車場（かすみ沢駐車場）& 上高地接駁交通',
+        subtitle: '停車場位置與接駁巴士・的士資訊',
+        note: '建議在此將車停好並準備隨身輕量背包進入上高地，大件行李可留於車內。',
+        rows: [
+          { label: '指定停車場', value: '市營第三駐車場（かすみ沢駐車場）' },
+          { label: '費用', value: '¥700/日' },
+          { label: '接駁方式', value: '停車場旁即有巴士站與計程車乘車處，可直達河童橋/大正池' },
+        ],
+        mapQuery: 'https://www.google.com/maps/search/?api=1&query=市営第三駐車場(かすみ沢駐車場)',
+        mapLabel: '導航至市營第三駐車場 (かすみ沢)',
+        siteLabel: '🚌 Alpico 上高地接駁巴士官方時刻表',
+        siteUrl: 'https://visit-nagano.alpico.co.jp/zh-hant/timetable/kamikochi-sawando',
+      },
+      'shirakabaso_kamikochi': {
+        icon: '🏨',
+        title: '上高地白樺莊 (Hotel Shirakabaso)',
+        subtitle: '河童橋正前方第一排 · 絕景穗高連峰視野',
+        note: '11:15 抵達後可先至櫃檯寄存大件行李並享用輕量午餐，再輕鬆開啟梓川健行行程。',
+        rows: [
+          { label: '入住資訊', value: 'Check-in 16:00' },
+          { label: '位置', value: '河童橋正前方第一排' },
+          { label: '特色', value: '絕景穗高連峰視野、精緻會席料理' },
+        ],
+        mapQuery: '上高地白樺荘',
+        mapLabel: '導航至上高地白樺莊',
+        siteLabel: '白樺莊官方網站',
+        siteUrl: 'https://shirakabaso.com/',
+      },
+      'azusa_river_hiking': {
+        icon: '🥾',
+        title: '梓川沿岸健行路線 (河童橋 ↔ 田代池 ↔ 大正池)',
+        subtitle: '河童橋 → 田代池 → 大正池 健行路線',
+        note: '步道全線平坦鋪設良好，可欣賞燒岳火山倒影與梓川清澈溪流，請穿著舒適健行鞋。',
+        rows: [
+          { label: '路線', value: '河童橋 ➔ 田代橋 ➔ 田代池 ➔ 大正池（原路折返）' },
+          { label: '所需時間', value: '平緩步道單程約 1–1.5 小時' },
+        ],
+        mapQuery: '河童橋 上高地',
+        mapLabel: '導航至河童橋',
+        siteLabel: '',
+        siteUrl: '',
+      },
+      'trois_cinq_apple_pie': {
+        icon: '🍎',
+        title: 'Trois Cinq 上高地 (トワサンク)',
+        subtitle: '河童橋畔人氣甜點咖啡館',
+        note: '蘋果派每日限量供應，營業至 16:00 關門，建議健行完畢後提早前去享用下午茶！',
+        rows: [
+          { label: '特色', value: '河童橋畔人氣甜點咖啡館' },
+          { label: '必吃', value: '每日現烤信州蘋果派（採用長野產優質蘋果，甜度適中）' },
+        ],
+        mapQuery: 'トワサンク 上高地',
+        mapLabel: '導航至 Trois Cinq 上高地',
+        siteLabel: '',
+        siteUrl: '',
+      },
+    };
+
     // 10/10（最後一天）專用速查：回程航班按鈕改為開啟詳細卡片（不另開新視窗）
     const TOKYO_DEPARTURE_QUICK_LINKS = [
       { icon: '🗼', title: '東京 / 銀座 購物與美食導覽', subtitle: '銀座商店街、美食與逛街重點', url: 'https://www.google.com/maps/search/?api=1&query=銀座 東京' },
@@ -362,25 +617,27 @@
     const QUICK_LINKS = {
       '10/3': [
         { icon: '✈️', title: '去程航班資訊 (CX524 - PNR: D6VGKN)', subtitle: '國泰航空 · 香港 HKG → 東京成田 NRT 第 2 航廈 · 點擊查看完整航班資訊', action: 'flight', flight: 'outbound' },
-        { icon: '🚗', title: '海老名 SA 休息站指南', subtitle: '東名高速第一個大型休息站', url: 'https://www.google.com/maps/search/?api=1&query=海老名サービスエリア' },
-        { icon: '☕', title: 'Bakery & Table 箱根', subtitle: '蘆之湖湖景 × 足湯咖啡', url: 'https://www.google.com/maps/search/?api=1&query=Bakery%26Table%20箱根' },
-        { icon: '♨️', title: '星野集團 界 箱根', subtitle: '溫泉旅館官網 / 設施資訊', url: 'https://kai-ryokan.jp/ja/hakone/' },
+        { icon: '🚗', title: '海老名 SA 休息站指南', subtitle: '東名高速道路上規模最大的旗艦級休息站', action: 'spot', spot: 'ebina_sa' },
+        { icon: '☕', title: 'Bakery & Table 箱根', subtitle: '蘆之湖湖景 × 足湯咖啡', action: 'spot', spot: 'bakery_table' },
+        { icon: '♨️', title: '星野集團 界 箱根', subtitle: '溫泉旅館官網 / 設施資訊', action: 'spot', spot: 'kai_hakone' },
       ],
       '10/4': [
-        { icon: '⛴️', title: '箱根海賊船', subtitle: '時刻表 / 航線資訊', url: 'https://www.hakone-kankosen.co.jp/' },
-        { icon: '🚡', title: '箱根駒ヶ岳纜車 / 芦ノソラ', subtitle: '蘆之湖空中散步與觀景台', url: 'https://www.hakonekomagatake.com/' },
-        { icon: '🌋', title: '大湧谷 即時火山與交通', subtitle: '日本氣象廳火山情報', url: 'https://www.jma.go.jp/jp/volcano/' },
-        { icon: '🍣', title: 'さかなや 本店 居酒屋', subtitle: '箱根湯本 在地海鮮居酒屋', url: 'https://www.google.com/maps/search/?api=1&query=さかなや 本店 箱根' },
+        { icon: '⛴️', title: '箱根海賊船', subtitle: '時刻表 / 航線資訊', action: 'spot', spot: 'hakone_pirate_ship' },
+        { icon: '🚡', title: '箱根駒ヶ岳纜車 / 芦ノソラ', subtitle: '蘆之湖空中散步與觀景台', action: 'spot', spot: 'komagatake_ropeway' },
+        { icon: '🌋', title: '大湧谷 即時火山與交通', subtitle: '日本氣象廳火山情報', action: 'spot', spot: 'owakudani_info' },
+        { icon: '🍣', title: 'さかなや 本店 居酒屋', subtitle: '箱根湯本 在地海鮮居酒屋', action: 'spot', spot: 'sakanaya_honten' },
+        { icon: '🏨', title: '御殿場 HOTEL CLAD', subtitle: '富士山景觀飯店 · 直通木花之湯溫泉', action: 'spot', spot: 'hotel_clad' },
       ],
       '10/5': [
-        { icon: '🗻', title: '御殿場 HOTEL CLAD', subtitle: '富士山景度假飯店官方網站', url: 'https://www.hotelclad.jp/' },
-        { icon: '🌊', title: '諏訪湖 立石公園觀景台', subtitle: '諏訪湖全景眺望點', url: 'https://www.google.com/maps/search/?api=1&query=立石公園 諏訪湖' },
-        { icon: '🍜', title: '信州蕎麥前 Gadogado - 手打蕎麥麵', subtitle: '風格現代且充滿質感的蕎麥麵居酒屋，結合傳統信州手打蕎麥麵與創意日式小菜、地酒。', url: 'https://www.google.com/maps/search/?api=1&query=信州蕎麥前 Gadogado' },
+        { icon: '🌊', title: '諏訪湖 立石公園觀景台', subtitle: '諏訪湖全景眺望點', action: 'spot', spot: 'tateishi_park' },
+        { icon: '🍜', title: '信州蕎麥前 Gadogado - 手打蕎麥麵', subtitle: '風格現代且充滿質感的蕎麥麵居酒屋，結合傳統信州手打蕎麥麵與創意日式小菜、地酒。', action: 'spot', spot: 'gadogado_soba' },
+        { icon: '♨️', title: '入住 Hotel Beni Ya 翠湖乃湯', subtitle: '諏訪湖第一排景觀溫泉飯店', action: 'spot', spot: 'hotel_beniya' },
       ],
       '10/6': [
-        { icon: '🍎', title: 'Trois Cinq Kamikochi - 現烤信州蘋果派', subtitle: '河童橋畔人氣甜點咖啡館 · 現烤蘋果派每日限量（16:00 關門）', url: 'https://www.google.com/maps/search/?api=1&query=Trois Cinq Kamikochi' },
-        { icon: '⛰️', title: '大正池 & 梓川健行路線地圖', subtitle: '河童橋 → 田代池 → 大正池 健行路線', url: 'https://www.google.com/maps/search/?api=1&query=大正池 上高地' },
-        { icon: '🚌', title: '澤渡停車場 / 上高地接駁交通資訊', subtitle: '停車場位置與接駁巴士・的士資訊', url: 'https://www.google.com/maps/search/?api=1&query=沢渡駐車場 上高地' },
+        { icon: '🅿️', title: '澤渡停車場 / 上高地接駁交通資訊', subtitle: '停車場位置與接駁巴士・的士資訊', action: 'spot', spot: 'sawando_parking' },
+        { icon: '🏨', title: '上高地白樺莊 Hotel Shirakabaso', subtitle: '河童橋正前方第一排 · 絕景穗高連峰視野', action: 'spot', spot: 'shirakabaso_kamikochi' },
+        { icon: '🥾', title: '大正池 & 梓川健行路線地圖', subtitle: '河童橋 → 田代池 → 大正池 健行路線', action: 'spot', spot: 'azusa_river_hiking' },
+        { icon: '🍎', title: 'Trois Cinq Kamikochi - 現烤信州蘋果派', subtitle: '河童橋畔人氣甜點咖啡館 · 現烤蘋果派每日限量（16:00 關門）', action: 'spot', spot: 'trois_cinq_apple_pie' },
       ],
       // 10/8 - 10/10 共用東京 / 回程資訊
       '10/7': [
@@ -519,13 +776,16 @@
       }
 
       const quickLinksHtml = links.map(link => {
-        // action: 'flight' 的項目渲染為按鈕（點擊開啟回程航班彈窗），其餘維持外部連結
+        // action: 'flight' → 開啟航班彈窗；action: 'spot' → 開啟景點詳細介紹彈窗；其餘維持外部連結
         const isFlightAction = link.action === 'flight';
+        const isSpotAction = link.action === 'spot';
         const openTag = isFlightAction
           ? `<button type="button" onclick="openFlightDetail('${link.flight || 'return'}')"`
-          : `<a href="${link.url}" target="_blank" rel="noopener"`;
-        const closeTag = isFlightAction ? '</button>' : '</a>';
-        const trailingIcon = isFlightAction ? 'fa-circle-info' : 'fa-arrow-up-right-from-square';
+          : isSpotAction
+            ? `<button type="button" onclick="openSpotDetail('${link.spot}')"`
+            : `<a href="${link.url}" target="_blank" rel="noopener"`;
+        const closeTag = (isFlightAction || isSpotAction) ? '</button>' : '</a>';
+        const trailingIcon = (isFlightAction || isSpotAction) ? 'fa-circle-info' : 'fa-arrow-up-right-from-square';
 
         return `
         ${openTag}
@@ -651,11 +911,54 @@
       modal.classList.remove('flex');
     }
 
-    // 按 ESC 可關閉美食簡介 / 回程航班資訊彈窗
+    // 開啟景點詳細介紹彈窗（key 對應 SPOT_DETAILS 的鍵值）
+    function openSpotDetail(key) {
+      const modal = document.getElementById('spot-modal');
+      const spot = SPOT_DETAILS[key];
+      if (!modal || !spot) return;
+
+      document.getElementById('spot-modal-icon').textContent = spot.icon;
+      document.getElementById('spot-modal-title').textContent = spot.title;
+      document.getElementById('spot-modal-subtitle').textContent = spot.subtitle;
+      document.getElementById('spot-modal-note').textContent = spot.note;
+
+      document.getElementById('spot-modal-rows').innerHTML = spot.rows.map(row => `
+        <div class="flex items-start gap-2 rounded-lg bg-stone-50 border border-stone-200 p-2.5">
+          <dt class="w-32 shrink-0 text-xs font-semibold text-stone-500">${row.label}</dt>
+          <dd class="flex-1 min-w-0 text-xs font-bold text-stone-900 break-words">${row.value}</dd>
+        </div>
+      `).join('');
+
+      document.getElementById('spot-modal-map').href = getMapUrl({ map_url: spot.mapQuery });
+      document.getElementById('spot-modal-map-label').textContent = spot.mapLabel;
+
+      const siteLink = document.getElementById('spot-modal-site');
+      if (spot.siteUrl) {
+        siteLink.href = spot.siteUrl;
+        document.getElementById('spot-modal-site-label').textContent = spot.siteLabel;
+        siteLink.style.display = 'inline-flex';
+      } else {
+        siteLink.style.display = 'none';
+      }
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    // 關閉景點詳細介紹彈窗
+    function closeSpotDetail() {
+      const modal = document.getElementById('spot-modal');
+      if (!modal) return;
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // 按 ESC 可關閉美食簡介 / 回程航班資訊 / 景點詳細介紹彈窗
     document.addEventListener('keydown', function (event) {
       if (event.key === 'Escape') {
         closeGourmetDetail();
         closeFlightDetail();
+        closeSpotDetail();
       }
     });
 
