@@ -39,6 +39,35 @@
       transform: rotate(180deg);
     }
 
+    /* 行程封面按鈕：暖秋橘膠囊造型 */
+    .cover-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1;
+      color: #7c3f00;
+      background: #fffaf2;
+      border: 2px solid #e67e22;
+      border-radius: 20px;
+      padding: 8px 16px;
+      text-decoration: none;
+      white-space: nowrap;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+    .cover-btn:hover {
+      transform: translateY(-2px);
+      background: #fff3e0;
+      box-shadow: 0 6px 16px -4px rgba(230, 126, 34, 0.65);
+    }
+    .cover-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+    }
+
     /* 楓葉飄落動畫 */
     @keyframes leaf-fall {
       0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
@@ -114,9 +143,12 @@
         </div>
         <p class="text-xs text-amber-300 mt-1">2026 Autumn Driving Tour · 2026.10.03 - 10.10</p>
       </div>
-      <button onclick="fetchItinerary()" class="refresh-btn text-amber-300 hover:text-amber-100 p-2" title="重新整理" aria-label="重新整理">
-        <i id="refresh-icon" class="fa-solid fa-rotate-right text-lg"></i>
-      </button>
+      <div class="flex items-center gap-3">
+        <a href="cover.html" target="_blank" rel="noopener" class="cover-btn">🎨 行程封面</a>
+        <button onclick="fetchItinerary()" class="refresh-btn text-amber-300 hover:text-amber-100 p-2" title="重新整理" aria-label="重新整理">
+          <i id="refresh-icon" class="fa-solid fa-rotate-right text-lg"></i>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -173,7 +205,7 @@
     <p class="mt-1 font-medium">東京 & 上高地 · 秋日自駕之旅 2026</p>
   </footer>
 
-  <!-- 美食簡介彈窗（點「看簡介」開啟；點背景、按 ESC 或按關閉即可收合） -->
+  <!-- 美食簡介彈窗（點擊口袋名單卡片開啟；點背景、按 ESC 或按關閉即可收合） -->
   <div id="gourmet-modal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="gourmet-modal-title">
     <div class="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onclick="closeGourmetDetail()" aria-hidden="true"></div>
     <div class="modal-panel relative z-10 w-full max-w-md max-h-[80vh] overflow-y-auto bg-white rounded-2xl p-5 shadow-2xl border border-white/60">
@@ -627,6 +659,77 @@
         siteLabel: 'garage 官方網站',
         siteUrl: 'https://garage-garden.com/shoplist/garage-shibuya/',
       },
+      // ===== 10/7（第五天）景點詳細介紹資料 =====
+      'danhozaka_sa': {
+        icon: '🛍️',
+        title: '談合坂 SA (上行) 休息站美食與伴手禮指南',
+        subtitle: '中央自動車道（山梨往東京方向）· 旗艦級休息站',
+        note: '必買桔梗信玄餅、信玄餅冰淇淋及山梨水桃甜點，長途開車回東京極佳的中途休息站。',
+        rows: [
+          { label: '位置', value: '中央自動車道（山梨往東京方向）' },
+          { label: '特色', value: '山梨與長野特產旗艦購買點' },
+        ],
+        mapQuery: 'https://www.google.com/maps/search/?api=1&query=談合坂SA+上行',
+        mapLabel: '導航至談合坂 SA (上行)',
+        siteLabel: '',
+        siteUrl: '',
+      },
+      'myojin_pond': {
+        icon: '⛩️',
+        title: '明神一之池 & 穗高神社奧宮',
+        subtitle: '上高地最具靈氣的神聖水池',
+        note: '池水清澈如鏡倒映明神嶽，清晨漫步前往人潮稀少、晨霧繚繞，景色最為震撼。',
+        rows: [
+          { label: '亮點', value: '上高地最具靈氣的神聖水池' },
+          { label: '門票', value: '參拜費 ¥500' },
+        ],
+        mapQuery: 'https://www.google.com/maps/search/?api=1&query=明神池+上高地',
+        mapLabel: '導航至明神池',
+        siteLabel: '',
+        siteUrl: '',
+      },
+      'kamonji_goya': {
+        icon: '🐟',
+        title: '嘉門次小屋 (明治時代百年歷史山小屋)',
+        subtitle: '1880 年創業老字號山小屋 · 地爐炭火鹽烤岩魚',
+        note: '使用圍爐裏古法現場慢火碳烤，連魚骨都能酥脆吃下！漫步完明神池後極佳的休息補給點。',
+        rows: [
+          { label: '特色', value: '1880 年創業老店' },
+          { label: '名物', value: '地爐炭火鹽烤岩魚（岩魚塩焼き）' },
+        ],
+        mapQuery: 'https://www.google.com/maps/search/?api=1&query=嘉門次小屋',
+        mapLabel: '導航至嘉門次小屋',
+        siteLabel: '',
+        siteUrl: '',
+      },
+      'daiwa_roynet_ginza': {
+        icon: '🏨',
+        title: 'ダイワロイネットホテル 銀座 PREMIER',
+        subtitle: '銀座一丁目站直結 · 高級質感商務酒店',
+        note: '抵達東京後先辦理 Check-in 放置行李並前往還車，隨後即可展開銀座夜間散策與晚餐。',
+        rows: [
+          { label: '入住', value: 'Check-in 14:00' },
+          { label: '交通', value: '銀座一丁目站直結、地鐵銀座站徒步 5 分鐘' },
+        ],
+        mapQuery: 'https://www.google.com/maps/search/?api=1&query=Daiwa+Roynet+Hotel+Ginza+PREMIER',
+        mapLabel: '導航至飯店',
+        siteLabel: '飯店官網',
+        siteUrl: 'https://www.daiwaroynet.jp/ginza-premier/',
+      },
+      'torigin_ginza': {
+        icon: '🍶',
+        title: '銀座 鳥ぎん 本店 (昭和老字號串燒與釜飯)',
+        subtitle: '昭和 26 年創業名店 · 備長炭現烤串燒與釜飯',
+        note: '昭和 26 年創業名店！備長炭現烤串燒搭配熱騰騰現煮雞肉/海鮮釜飯（飯焦香濃郁），開車還車後極佳的放鬆晚餐。',
+        rows: [
+          { label: '營業時間', value: '11:30 – 22:00' },
+          { label: '地點', value: '東京都中央区銀座5-5-7 B1F' },
+        ],
+        mapQuery: 'https://www.google.com/maps/search/?api=1&query=銀座鳥ぎん本店',
+        mapLabel: '導航至銀座鳥ぎん本店',
+        siteLabel: '',
+        siteUrl: '',
+      },
     };
 
     // 10/10（最後一天）專用速查：回程航班按鈕改為開啟詳細卡片（不另開新視窗）
@@ -662,9 +765,11 @@
       ],
       // 10/8 - 10/10 共用東京 / 回程資訊
       '10/7': [
-        { icon: '🛍️', title: '談合坂 SA - 旗艦級休息站 / 伴手禮&美食指南', subtitle: '中央自動車道必停大休息站 · 山梨・長野伴手禮與美食', url: 'https://www.google.com/maps/search/?api=1&query=談合坂サービスエリア' },
-        { icon: '⛩️', title: '明神一之池 & 穗高神社奧宮 介紹', subtitle: '上高地明神池絕景與神社參拜', url: 'https://www.google.com/maps/search/?api=1&query=明神池 上高地' },
-        { icon: '🐟', title: '嘉門次小屋 傳統炭火烤岩魚', subtitle: '百年歷史小屋 · 炭火鹽烤岩魚', url: 'https://www.google.com/maps/search/?api=1&query=嘉門次小屋 上高地' },
+        { icon: '🛍️', title: '談合坂 SA - 旗艦級休息站 / 伴手禮&美食指南', subtitle: '中央自動車道必停大休息站 · 山梨·長野伴手禮與美食', action: 'spot', spot: 'danhozaka_sa' },
+        { icon: '⛩️', title: '明神一之池 & 穗高神社奧宮 介紹', subtitle: '上高地明神池絕景神社參拜', action: 'spot', spot: 'myojin_pond' },
+        { icon: '🐟', title: '嘉門次小屋 傳統炭火烤岩魚', subtitle: '百年歷史小屋 · 炭火鹽烤岩魚', action: 'spot', spot: 'kamonji_goya' },
+        { icon: '♨️', title: '入住 ダイワロイネットホテル 銀座 PREMIER', subtitle: '銀座站徒步 5 分鐘 · 高級質感飯店', action: 'spot', spot: 'daiwa_roynet_ginza' },
+        { icon: '🍶', title: '銀座 鳥ぎん 本店', subtitle: '昭和老字號 · 備長炭串燒與現煮釜飯', action: 'spot', spot: 'torigin_ginza' },
       ],
       '10/8': TOKYO_QUICK_LINKS,
       '10/9': TOKYO_QUICK_LINKS,
@@ -870,25 +975,25 @@
     // 產生「東京精選美食口袋名單」區塊（僅 10/8 與 10/9 顯示）
     function getGourmetSectionHtml() {
       const cards = TOKYO_GOURMET.map((item, index) => {
-        // 有 spot 欄位時，「看簡介」改為開啟景點詳細彈窗（openSpotDetail）；否則維持美食簡介彈窗
+        // 有 spot 欄位時開啟景點詳細彈窗（openSpotDetail）；否則開啟美食簡介彈窗（openGourmetDetail）
+        // 整張卡片可點擊（與 10/3–10/7 的 Quick Links 一致），右側附黃色 (i) 圖示
         const introAction = item.spot
           ? `openSpotDetail('${item.spot}')`
           : `openGourmetDetail(${index})`;
         return `
-        <div class="rounded-xl bg-white/85 border border-white/60 p-3 shadow-sm">
+        <div class="quick-link-btn cursor-pointer rounded-xl bg-white/85 border border-white/60 p-3 shadow-sm hover:bg-white" onclick="${introAction}">
           <div class="flex items-start gap-3">
             <span class="text-xl min-w-[34px] text-center" aria-hidden="true">${item.icon}</span>
             <span class="flex-1 min-w-0">
               <span class="block text-sm font-bold text-stone-900 leading-snug">${item.title}</span>
               ${item.subtitle ? `<span class="block text-xs text-stone-500 mt-0.5">${item.subtitle}</span>` : ''}
             </span>
+            <span class="text-amber-600 shrink-0" aria-hidden="true">
+              <i class="fa-solid fa-circle-info text-xs"></i>
+            </span>
           </div>
           <div class="flex flex-wrap items-center gap-2 mt-2.5">
-            <button type="button" onclick="${introAction}"
-              class="inline-flex items-center gap-1 text-xs font-semibold bg-amber-100 text-amber-900 border border-amber-200 px-3 py-1.5 rounded-full hover:bg-amber-200 transition-colors">
-              📖 看簡介
-            </button>
-            <a href="${getGourmetMapUrl(item)}" target="_blank" rel="noopener"
+            <a href="${getGourmetMapUrl(item)}" target="_blank" rel="noopener" onclick="event.stopPropagation()"
               class="inline-flex items-center gap-1 text-xs font-semibold bg-amber-600 text-white px-3 py-1.5 rounded-full hover:bg-amber-700 transition-colors">
               <i class="fa-solid fa-diamond-turn-right"></i>開啟地圖導航
             </a>
@@ -903,7 +1008,7 @@
             <span class="text-xl" aria-hidden="true">🍽️</span>
             <h3 class="text-sm font-bold text-stone-900">東京精選美食與購物口袋名單</h3>
           </div>
-          <p class="text-xs text-stone-600 mt-1 mb-3">Tokyo Gourmet &amp; Shopping · 點「看簡介」看店家介紹，或直接開啟地圖導航</p>
+          <p class="text-xs text-stone-600 mt-1 mb-3">Tokyo Gourmet &amp; Shopping · 點擊卡片查看店家介紹，或直接開啟地圖導航</p>
           <div class="space-y-2.5">${cards}</div>
         </div>
       `;
