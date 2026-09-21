@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>東京 &amp; 長野・秋日自駕之旅 2026 — 行程封面</title>
+  <title>2026 秋楓與東京的約定 — 手繪行程地圖</title>
 
   <!-- 可愛圓角字體（離線時自動退回系統字型） -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,18 +13,14 @@
   <style>
     :root {
       --cream: #fffaf2;
-      --milk-tea-1: #fdf6ec;
-      --milk-tea-2: #fbead3;
-      --milk-tea-3: #f6d4a6;
       --brown: #7a4520;
       --brown-soft: #9a6a3c;
       --amber: #e07b1f;
       --amber-soft: #f4a64a;
-      --card-bg: rgba(255, 250, 242, 0.92);
-      --line: rgba(224, 123, 31, 0.5);
+      --line: rgba(224, 123, 31, 0.45);
     }
 
-    /* ===== A4 列印設定 ===== */
+    /* ===== A4 列印設定：兩張圖各自獨立成一頁 ===== */
     @page {
       size: A4;
       margin: 0;
@@ -32,7 +28,7 @@
 
     * {
       box-sizing: border-box;
-      /* 確保列印 / 匯出 PDF 時背景色與圖示完全保留 */
+      /* 確保列印 / 匯出 PDF 時背景與圖片色彩完整保留 */
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
     }
@@ -46,240 +42,142 @@
       font-family: "M PLUS Rounded 1c", "Yu Gothic", "Hiragino Maru Gothic ProN",
         "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
       background: #e8dcc9;
+      padding: 0 14px 32px;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
     }
 
-    /* ===== 單頁 A4 版面 ===== */
-    .page {
-      width: 210mm;
-      height: 297mm;
+    /* ===== 頂部工具列（列印時自動隱藏） ===== */
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      margin: 0 -14px 20px;
+      padding: 12px 14px;
+      background: rgba(255, 250, 242, 0.94);
+      border-bottom: 1.5px solid var(--line);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    .toolbar-inner {
+      max-width: 1000px;
       margin: 0 auto;
-      position: relative;
-      overflow: hidden;
       display: flex;
-      flex-direction: column;
-      padding: 18mm 15mm 13mm;
-      background: linear-gradient(168deg, var(--milk-tea-1) 0%, var(--milk-tea-2) 48%, var(--milk-tea-3) 100%);
-      box-shadow: 0 24px 70px rgba(90, 55, 20, 0.35);
-    }
-
-    /* 內層虛線手帳框 */
-    .page::before {
-      content: "";
-      position: absolute;
-      inset: 7mm;
-      border: 2px dashed var(--line);
-      border-radius: 18px;
-      pointer-events: none;
-    }
-
-    /* ===== 飄散裝飾葉子 ===== */
-    .leaf {
-      position: absolute;
-      pointer-events: none;
-      user-select: none;
-      opacity: 0.32;
-      line-height: 1;
-    }
-    .leaf-1 { top: 14mm; left: 16mm; font-size: 40px; transform: rotate(-18deg); }
-    .leaf-2 { top: 18mm; right: 18mm; font-size: 32px; transform: rotate(16deg); }
-    .leaf-3 { bottom: 20mm; left: 18mm; font-size: 34px; transform: rotate(12deg); }
-    .leaf-4 { bottom: 22mm; right: 16mm; font-size: 42px; transform: rotate(-14deg); }
-    .leaf-5 { bottom: 30mm; right: 40mm; font-size: 26px; transform: rotate(-8deg); opacity: 0.25; }
-    /* ===== 內容區 ===== */
-    .content {
-      position: relative;
-      z-index: 1;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
       align-items: center;
-      text-align: center;
-    }
-
-    .eyebrow {
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.28em;
-      color: var(--amber);
-      margin-bottom: 10mm;
-    }
-
-    .title {
-      font-size: 30px;
-      font-weight: 800;
-      line-height: 1.28;
-      color: var(--brown);
-      margin: 0 0 8mm;
-      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.7);
-    }
-
-    .date-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--brown);
-      background: var(--cream);
-      border: 2px solid var(--amber-soft);
-      border-radius: 999px;
-      padding: 8px 22px;
-      box-shadow: 0 6px 16px -6px rgba(224, 123, 31, 0.45);
-      margin-bottom: 12mm;
-    }
-
-    /* ===== 可愛路線圖標籤串聯 ===== */
-    .route {
-      display: flex;
+      justify-content: space-between;
+      gap: 12px;
       flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      max-width: 170mm;
-      margin-bottom: 12mm;
     }
-    .route-tag {
+    .toolbar-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--brown);
+      letter-spacing: 0.04em;
+    }
+    .print-btn {
       display: inline-flex;
       align-items: center;
-      font-size: 12.5px;
-      font-weight: 700;
-      color: var(--brown);
-      background: rgba(255, 250, 242, 0.85);
-      border: 1.5px solid rgba(224, 123, 31, 0.45);
-      border-radius: 999px;
-      padding: 7px 13px;
-      box-shadow: 0 4px 10px -4px rgba(224, 123, 31, 0.35);
-      white-space: nowrap;
-    }
-    .route-arrow {
+      gap: 8px;
+      font-family: inherit;
       font-size: 14px;
-      color: var(--amber);
       font-weight: 800;
+      color: #fff;
+      background: var(--amber);
+      border: none;
+      border-radius: 999px;
+      padding: 10px 20px;
+      cursor: pointer;
+      box-shadow: 0 8px 18px -8px rgba(224, 123, 31, 0.75);
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+    .print-btn:hover {
+      background: #c96a12;
+      transform: translateY(-1px);
+    }
+    .print-btn:active {
+      transform: translateY(0);
     }
 
-    /* ===== 四大特色亮點網格卡片 ===== */
-    .cards {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6mm;
-      width: 100%;
-      margin-bottom: 12mm;
+    /* ===== 每張手繪行程地圖一頁 ===== */
+    .page {
+      max-width: 1000px;    /* 圖片最大寬度上限 */
+      margin: 0 auto 26px;  /* 水平置中顯示 */
     }
-    .card {
-      background: var(--card-bg);
-      border: 1.5px solid rgba(224, 123, 31, 0.28);
+
+    .page img {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
       border-radius: 16px;
-      padding: 7mm 6mm;
-      text-align: center;
-      box-shadow: 0 10px 22px -10px rgba(122, 69, 32, 0.4);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 3mm;
-    }
-    .card-icon { font-size: 34px; line-height: 1; }
-    .card-title {
-      font-size: 15px;
-      font-weight: 800;
-      color: var(--brown);
-      line-height: 1.25;
-    }
-    .card-sub {
-      font-size: 11.5px;
-      font-weight: 500;
-      color: var(--brown-soft);
-      line-height: 1.5;
+      box-shadow: 0 22px 48px -22px rgba(90, 55, 20, 0.55),
+                  0 8px 20px -12px rgba(90, 55, 20, 0.35);
+      background: var(--cream);
     }
 
-    /* ===== 頁尾備忘列 ===== */
-    .footer {
-      font-size: 11.5px;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      color: var(--brown-soft);
-      border-top: 1.5px dashed var(--line);
-      padding-top: 6mm;
-      width: 100%;
-      text-align: center;
-    }
-    .footer span { color: var(--amber); }
-
-    /* ===== 列印專用 ===== */
+    /* ===== 列印 / 匯出 PDF：隱藏標頭與按鈕、兩頁各自獨立 ===== */
     @media print {
-      body { background: none; }
-      .page {
+      html, body {
+        background: none;
         margin: 0;
-        width: 210mm;
-        height: 297mm;
+        padding: 0;
+      }
+
+      /* 列印時自動隱藏標頭與按鈕 */
+      .toolbar,
+      .print-btn {
+        display: none !important;
+      }
+
+      .page {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        max-width: none;
+        min-height: 285mm;  /* 略小於 A4 高度，避免滿版造成多餘空白頁 */
+        margin: 0;
+        page-break-after: always;  /* Part 1 / Part 2 各自獨立佔用一張 A4 */
+        break-after: page;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+
+      /* 最後一頁不再強制分頁，避免尾端多出空白頁 */
+      .page:last-child {
+        page-break-after: auto;
+        break-after: auto;
+      }
+
+      .page img {
+        width: 100%;
+        max-width: 100%;
+        max-height: 280mm;
+        height: auto;
+        object-fit: contain;
+        border-radius: 0;
         box-shadow: none;
       }
     }
   </style>
 </head>
 <body>
-  <div class="page">
-    <!-- 裝飾葉子 -->
-    <span class="leaf leaf-1" aria-hidden="true">🍁</span>
-    <span class="leaf leaf-2" aria-hidden="true">🍂</span>
-    <span class="leaf leaf-3" aria-hidden="true">🍃</span>
-    <span class="leaf leaf-4" aria-hidden="true">🍁</span>
-    <span class="leaf leaf-5" aria-hidden="true">🚗</span>
-
-    <div class="content">
-      <header class="eyebrow">🍁 AUTUMN ROAD TRIP · 2026 🍂</header>
-
-      <h1 class="title">🍁 東京 &amp; 長野・秋日自駕之旅 2026 🚗</h1>
-
-      <div class="date-pill">📅 2026.10.03 – 10.10 · 8 Days Autumn Road Trip</div>
-
-      <div class="route">
-        <span class="route-tag">✈️ 羽田/成田</span>
-        <span class="route-arrow">➔</span>
-        <span class="route-tag">♨️ 箱根</span>
-        <span class="route-arrow">➔</span>
-        <span class="route-tag">🗻 御殿場</span>
-        <span class="route-arrow">➔</span>
-        <span class="route-tag">🌊 諏訪湖</span>
-        <span class="route-arrow">➔</span>
-        <span class="route-tag">🥾 上高地</span>
-        <span class="route-arrow">➔</span>
-        <span class="route-tag">🛍️ 銀座</span>
-        <span class="route-arrow">➔</span>
-        <span class="route-tag">🛫 成田</span>
-      </div>
-
-      <div class="cards">
-        <div class="card">
-          <span class="card-icon" aria-hidden="true">🚗</span>
-          <div class="card-title">富士山絕景自駕</div>
-          <div class="card-sub">箱根 / 御殿場 / 諏訪湖</div>
-        </div>
-        <div class="card">
-          <span class="card-icon" aria-hidden="true">♨️</span>
-          <div class="card-title">湖畔溫泉旅宿</div>
-          <div class="card-sub">界箱根 / Hotel CLAD / ホテル紅や</div>
-        </div>
-        <div class="card">
-          <span class="card-icon" aria-hidden="true">🍁</span>
-          <div class="card-title">上高地紅葉健行</div>
-          <div class="card-sub">河童橋 / 梓川步道 / 明神池</div>
-        </div>
-        <div class="card">
-          <span class="card-icon" aria-hidden="true">☕</span>
-          <div class="card-title">東京質感散策</div>
-          <div class="card-sub">銀座鳥ぎん釜飯 / garage SHIBUYA / 冠軍精品咖啡</div>
-        </div>
-      </div>
-
-      <footer class="footer">
-        Personal Itinerary · <span>Tokyo &amp; Nagano Driving Tour 2026</span>
-      </footer>
+  <!-- 頂部「列印 / 匯出 PDF」按鈕（列印時自動隱藏） -->
+  <header class="toolbar">
+    <div class="toolbar-inner">
+      <span class="toolbar-title">🍁 2026 秋楓與東京的約定 · 手繪行程地圖</span>
+      <button type="button" class="print-btn" onclick="window.print()">🖨️ 列印 / 匯出 PDF</button>
     </div>
-  </div>
+  </header>
+
+  <!-- 第一頁：郊外自駕篇 -->
+  <section class="page">
+    <img src="images/Part 1.jpeg" alt="2026 秋楓與東京的約定 Part 1">
+  </section>
+
+  <!-- 第二頁：東京市區篇 -->
+  <section class="page">
+    <img src="images/Part 2.jpeg" alt="2026 秋楓與東京的約定 Part 2">
+  </section>
+
 </body>
 </html>
-
-

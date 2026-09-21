@@ -778,6 +778,8 @@
 
     // ===== 東京精選美食口袋名單（10/8 & 10/9 右側速查專區） =====
     // 每項包含：icon 圖示 / title 店名 / subtitle 一句話賣點 / desc 彈窗簡介 / tips 實用提醒 / mapQuery 地圖搜尋關鍵字
+    // 亦可補充：rows 彈窗資訊表格（地點 / 營業時間 / 特色亮點）、modalTitle 彈窗標題（與卡片名稱不同時）、
+    //           mapLabel 導航按鈕文字、siteUrl / siteLabel 官方網站按鈕、spot 改開景點詳細彈窗
     const TOKYO_GOURMET = [
       {
         icon: '🍵',
@@ -869,6 +871,74 @@
         mapLabel: '導航至 PHILOCOFFEA 表參道店',
         siteLabel: '官方網站',
         siteUrl: 'https://philocoffea.com',
+      },
+      {
+        icon: '🍝',
+        title: '地中海酒場 ココチーノ 西新宿店',
+        subtitle: '西新宿 · 超高 CP 值地中海餐酒館 (人均約 ¥3,000)',
+        rows: [
+          { label: '地點', value: '東京都新宿区西新宿 7-15-17 東光ビル 1F（西新宿站徒步 3 分 / 新宿站徒步 7 分）' },
+          { label: '營業時間', value: '11:30 – 23:00' },
+          { label: '特色亮點', value: 'CP 值極高！必點藍紋起司乾無花果披薩 (¥1,628)、紅蟳番茄奶油義大利麵 (¥1,738)' },
+        ],
+        tips: '適合安排在新宿散策或逛街後的晚餐/聚會餐酒館，建議事先預約。',
+        mapQuery: 'https://www.google.com/maps/search/?api=1&query=地中海酒場+ココチーノ+西新宿店',
+        mapLabel: '導航至 地中海酒場 ココチーノ 西新宿店',
+      },
+      {
+        icon: '🍞',
+        title: 'No.4 (市ヶ谷/麹町)',
+        modalTitle: 'No.4 (Bakery & Cafe)',
+        subtitle: '千代田區四番町 · 入口即化超人氣爆漿法式吐司',
+        rows: [
+          { label: '地點', value: '東京都千代田区四番町 5-9（市ヶ谷站 / 麹町站徒步 5 分）' },
+          { label: '營業時間', value: '08:00 – 21:00' },
+          { label: '特色亮點', value: '主打極致軟嫩入口即化的法式吐司、酪梨吐司、鮮果沙拉，內用咖啡可免費續杯！' },
+        ],
+        tips: '東京極具代表性的烘焙咖啡館，適合安排作為 10/8 或 10/9 的早午餐或下午茶休息點。',
+        mapQuery: 'https://www.google.com/maps/search/?api=1&query=No.4+千代田区四番町',
+        mapLabel: '導航至 No.4 市ヶ谷',
+      },
+      {
+        icon: '🍵',
+        title: '茶葉 增田園 總本店',
+        subtitle: '淺草雷門前百年老字號茶舖 · 必吃濃郁抹茶霜淇淋',
+        rows: [
+          { label: '地點', value: '東京都台東区浅草 1-1-17（淺草站/雷門徒步 2 分）' },
+          { label: '營業時間', value: '09:00 – 19:00' },
+          { label: '特色亮點', value: '慶應三年 (1867年) 創業老舖！現場提供現壓濃郁抹茶霜淇淋、綜合抹綠茶與各式靜岡深蒸煎茶禮盒。' },
+        ],
+        tips: '散步至淺草寺與雷門時極佳的邊走邊吃點心與伴手禮採購點。',
+        mapQuery: 'https://www.google.com/maps/search/?api=1&query=茶葉+增田園+總本店',
+        mapLabel: '導航至 茶葉 增田園 總本店',
+      },
+      {
+        icon: '🍵',
+        title: '樂山 神樂坂店',
+        modalTitle: '神樂坂銘茶 樂山 神樂坂店',
+        subtitle: '神樂坂銘茶老店 · 靜岡掛川深蒸煎茶與精致茶具',
+        rows: [
+          { label: '地點', value: '東京都新宿区神楽坂 4-1（飯田橋站 / 神樂坂站徒步 5 分）' },
+          { label: '營業時間', value: '09:00 – 19:00' },
+          { label: '特色亮點', value: 'Google 4.7 高分評價銘茶專賣店！主打靜岡縣產深蒸茶，茶香濃郁順口，並販售質感日式茶具。' },
+        ],
+        tips: '神樂坂散策必訪，店內常有現場煎茶試飲，適合挑選送禮茶葉。',
+        mapQuery: 'https://www.google.com/maps/search/?api=1&query=樂山+神樂坂店',
+        mapLabel: '導航至 樂山 神樂坂店',
+      },
+      {
+        icon: '🍵',
+        title: 'ATELIER MATCHA',
+        modalTitle: 'ATELIER MATCHA (Bakery & Matcha Cafe)',
+        subtitle: '人形町/日本橋 · 京都 160 年山政小山園頂級抹茶 Cafe',
+        rows: [
+          { label: '地點', value: '東京都中央区日本橋人形町 1-5-8（人形町站徒步 2 分）' },
+          { label: '營業時間', value: '09:00 – 18:00' },
+          { label: '特色亮點', value: '由京都宇治抹茶問屋「山政小山園」合作打造！使用電動茶筅現打特級抹茶，必點濃郁抹茶蛋糕與抹茶拿鐵。' },
+        ],
+        tips: '人氣極高的質感抹茶體驗店，建議早點抵達避開排隊人潮。',
+        mapQuery: 'https://www.google.com/maps/search/?api=1&query=ATELIER+MATCHA',
+        mapLabel: '導航至 ATELIER MATCHA',
       },
     ];
 
