@@ -730,6 +730,39 @@
         siteLabel: '',
         siteUrl: '',
       },
+      // 10/7 晚餐：名古屋排隊鰻魚名店（東京ミッドタウン八重洲店 3F）
+      'unafuji_yaesu': {
+        icon: '🍱',
+        title: '炭燒うな富士 東京ミッドタウン八重洲店 (Sumiyaki Unafuji)',
+        subtitle: '東京八重洲 / 東京車站口 · 名古屋排隊鰻魚名店',
+        note: '返抵東京還車後極佳的晚餐選擇，建議提早於官方 TableCheck 網站預約，避免現場排隊。',
+        rows: [
+          { label: '地點', value: '東京都中央区八重洲 2-2-1 東京ミッドタウン八重洲 3F（東京站八重洲地下街直通 / 京橋站徒步 3 分）' },
+          { label: '營業時間', value: '11:00 – 22:00 (最後點餐 21:00)' },
+          { label: '預算', value: '約 ¥5,000 – ¥6,000 / 人' },
+          { label: '特色亮點', value: '名古屋排隊鰻魚名店！嚴選特大「青鰻」，以高溫備長炭香烤至表皮酥脆、肉質肥美，必點鰻魚飯三吃 (ひつまぶし) 與炭燒鰻魚重。' },
+        ],
+        mapQuery: 'https://www.google.com/maps/search/?api=1&query=炭燒うな富士+東京ミッドタウン八重洲店',
+        mapLabel: '導航至炭燒うな富士 八重洲店',
+        siteLabel: '',
+        siteUrl: '',
+      },
+      // 10/7 購物：鬼塚虎最高階日本職人手作系列（與晚餐同棟 1F）
+      'onitsuka_tiger_yaesu': {
+        icon: '👟',
+        title: 'Onitsuka Tiger NIPPON MADE (東京ミッドタウン八重洲)',
+        subtitle: '東京 Midtown 八重洲 1F · 日本職人手作最高階系列',
+        note: '老婆指定必買鞋款！建議晚餐前先逛，熱門尺寸與限定顏色售完即止。',
+        rows: [
+          { label: '地點', value: '東京都中央区八重洲 2-2-1 東京ミッドタウン八重洲 1F（與晚餐炭燒うな富士同棟大樓）' },
+          { label: '營業時間', value: '11:00 – 21:00' },
+          { label: '特色亮點', value: '鬼塚虎最高階日本職人手作系列「NIPPON MADE」專賣店！主打日本製造頂級皮革、細緻水洗工藝與極致舒適腳感。' },
+        ],
+        mapQuery: 'https://www.google.com/maps/search/?api=1&query=Onitsuka+Tiger+NIPPON+MADE+東京ミッドタウン八重洲',
+        mapLabel: '導航至 Onitsuka Tiger 八重洲店',
+        siteLabel: '',
+        siteUrl: '',
+      },
     };
 
     // 10/10（最後一天）專用速查：回程航班按鈕改為開啟詳細卡片（不另開新視窗）
@@ -769,7 +802,8 @@
         { icon: '⛩️', title: '明神一之池 & 穗高神社奧宮 介紹', subtitle: '上高地明神池絕景神社參拜', action: 'spot', spot: 'myojin_pond' },
         { icon: '🐟', title: '嘉門次小屋 傳統炭火烤岩魚', subtitle: '百年歷史小屋 · 炭火鹽烤岩魚', action: 'spot', spot: 'kamonji_goya' },
         { icon: '♨️', title: '入住 ダイワロイネットホテル 銀座 PREMIER', subtitle: '銀座站徒步 5 分鐘 · 高級質感飯店', action: 'spot', spot: 'daiwa_roynet_ginza' },
-        { icon: '🍶', title: '銀座 鳥ぎん 本店', subtitle: '昭和老字號 · 備長炭串燒與現煮釜飯', action: 'spot', spot: 'torigin_ginza' },
+        { icon: '👟', title: 'Onitsuka Tiger NIPPON MADE 東京中城八重洲店', subtitle: '18:00 必逛採購 · 老婆指定必買鞋款（1F 與晚餐同棟）', action: 'spot', spot: 'onitsuka_tiger_yaesu' },
+        { icon: '🍱', title: '炭燒うな富士 東京ミッドタウン八重洲店', subtitle: '10/7 晚餐 · 名古屋排隊鰻魚名店（八重洲地下街直通）', action: 'spot', spot: 'unafuji_yaesu' },
       ],
       '10/8': TOKYO_QUICK_LINKS,
       '10/9': TOKYO_QUICK_LINKS,
@@ -988,6 +1022,8 @@
         { time: '11:30', title: '澤渡取車出發，開車返回東京', category: 'Transport', location: '澤渡停車場 → 東京', notes: '中央自動車道（中央道）北上', map_url: '沢渡駐車場' },
         { time: '13:30', title: '談合坂 SA (上行) 中途大休息', category: 'Food', location: '談合坂服務區（中央自動車道 上行）', notes: '享用午餐、採買山梨/長野伴手禮', map_url: '談合坂サービスエリア' },
         { time: '16:30', title: '入住ダイワロイネットホテル 銀座 PREMIER 並辦理還車', category: 'Hotel', location: 'ダイワロイネットホテル 銀座 PREMIER', notes: 'Check-in 並完成還車手續', map_url: 'ダイワロイネットホテル銀座PREMIER' },
+        { time: '18:00', title: '👟 必逛採購：Onitsuka Tiger NIPPON MADE 東京中城八重洲店', category: 'Shopping', location: '東京八重洲 / 東京 Midtown 八重洲 1F', notes: '老婆指定必買鞋款！與晚餐同棟大樓，建議晚餐前先逛，熱門尺寸與限定顏色售完即止', map_url: 'Onitsuka Tiger NIPPON MADE 東京ミッドタウン八重洲', spot: 'onitsuka_tiger_yaesu' },
+        { time: '19:00', title: '🍱 晚餐：炭燒うな富士 東京ミッドタウン八重洲店', category: 'Food', location: '東京八重洲 / 東京車站口', notes: '東京站八重洲地下街直通，還車後極佳的晚餐選擇，建議提早於 TableCheck 預約', map_url: '炭燒うな富士 東京ミッドタウン八重洲店', spot: 'unafuji_yaesu' },
       ],
     };
 
@@ -1338,10 +1374,13 @@
         } else if (item.category === "Food") {
           icon = "🍙";
           categoryBg = "bg-rose-100 text-rose-800";
+        } else if (item.category === "Shopping") {
+          icon = "🛍️";
+          categoryBg = "bg-amber-100 text-amber-800";
         }
 
-        // 動作按鈕區（地圖導航 + 巴士時間表）
-        const actionsHtml = (item.map_url || item.bus_url) ? `
+        // 動作按鈕區（地圖導航 + 巴士時間表 + 景點詳細介紹彈窗）
+        const actionsHtml = (item.map_url || item.bus_url || item.spot) ? `
           <div class="flex flex-wrap items-center gap-3 mt-3">
             ${item.map_url ? `
               <a href="${getMapUrl(item)}" target="_blank" class="map-btn inline-flex items-center gap-1.5 text-xs font-semibold bg-amber-600 text-white px-3 py-1.5 rounded-full hover:bg-amber-700 transition-colors">
@@ -1352,6 +1391,11 @@
               <a href="${item.bus_url}" target="_blank" class="inline-flex items-center gap-1 text-xs font-semibold bg-white text-stone-700 border border-stone-300 px-3 py-1.5 rounded-full hover:bg-stone-50 transition-colors">
                 🚌 巴士時間表
               </a>
+            ` : ''}
+            ${item.spot ? `
+              <button type="button" onclick="openSpotDetail('${item.spot}')" class="inline-flex items-center gap-1 text-xs font-semibold bg-white text-stone-700 border border-stone-300 px-3 py-1.5 rounded-full hover:bg-stone-50 transition-colors">
+                <i class="fa-solid fa-circle-info text-amber-600"></i>查看詳細介紹
+              </button>
             ` : ''}
           </div>
         ` : '';
