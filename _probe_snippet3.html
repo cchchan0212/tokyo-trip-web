@@ -1,0 +1,29 @@
+  <!-- ===== 臨時驗證腳本 2（邊界情況：非行程日期 / 當日無行程）===== -->
+  <script>
+    setTimeout(function () {
+      var out = {};
+
+      // 1) 非行程日期：應無 Day 徽章、無 Live Cam 按鈕
+      out.unknownDateHtml = getDayHeaderHtml('2027-01-01T00:00:00.000Z');
+
+      // 2) 當日無行程資料：仍應顯示標題卡片（含 Live Cam 按鈕）+ 無行程提示
+      currentDate = '2099-01-01T00:00:00.000Z';
+      renderTimeline();
+      var tl = document.getElementById('timeline');
+      out.emptyStateHtml = tl.innerHTML;
+      out.emptyHasDayHeader = !!tl.querySelector('.day-header');
+      out.emptyHasLiveCam = !!tl.querySelector('.live-cam-btn');
+      out.emptyHasNotice = tl.textContent.indexOf('今日暫無行程安排') >= 0;
+
+      // 3) 各日切換後 quick-links 仍正常（回歸）
+      currentDate = '2026-10-07T16:00:00.000Z';
+      renderQuickLinks();
+      out.quickLinksHasTokyo = document.getElementById('quick-links').textContent.indexOf('garage') >= 0;
+
+      var pre = document.createElement('pre');
+      pre.id = 'LIVECAM_PROBE_RESULT';
+      pre.textContent = JSON.stringify(out);
+      document.body.appendChild(pre);
+      document.title = 'PROBE-READY';
+    }, 2500);
+  </script>
